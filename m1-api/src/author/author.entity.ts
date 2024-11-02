@@ -9,8 +9,8 @@ export class Author {
   @Column()
   name: string;
 
-  @Column()
-  profilePhoto: string; 
+  @Column({ nullable: true })
+  profilePicture?: string; 
 
   @OneToMany(() => Book, (book) => book.author)
   books: Book[];

@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { BookService } from './book.service';
 import { Book } from './book.entity';
+import { CreateBookDto } from './dto/book.dto';
 
 @Controller('books')
 export class BookController {
@@ -20,7 +21,7 @@ export class BookController {
 
   // Route pour ajouter un nouveau livre
   @Post()
-  async create(@Body() bookData: Partial<Book>): Promise<Book> {
+  async create(@Body() bookData: CreateBookDto): Promise<Book> {
     console.log("Book data:", bookData);
     return await this.bookService.create(bookData);
   }

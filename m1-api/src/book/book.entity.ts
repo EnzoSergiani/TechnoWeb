@@ -10,7 +10,7 @@ export class Book {
 
     @Column()
     @IsNotEmpty()
-    name: string;
+    title: string;
 
     @Column('decimal', { precision: 5, scale: 2, default: 0 })
     price: number;
