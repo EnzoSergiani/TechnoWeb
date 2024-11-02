@@ -19,7 +19,7 @@ export class Book {
     publicationYear: number;
 
     @Column('float', { nullable: true })
-    averageRating: number;
+    rating: number;
 
     // Un livre n'a qu'un auteur
     @ManyToOne(() => Author, (author) => author.books, { eager: true })
