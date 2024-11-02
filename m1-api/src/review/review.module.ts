@@ -5,10 +5,11 @@ import { BookModule } from 'src/book/book.module';
 import { ReviewController } from './review.controler';
 import { Review } from './review.entity';
 import { ReviewService } from './review.service';
+import { AuthorModule } from '../author/author.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Review, Book]), BookModule],
+    imports: [TypeOrmModule.forFeature([Review, Book]), BookModule, AuthorModule],
     controllers: [ReviewController],
-    providers: [ReviewService]
+    providers: [ReviewService],
 })
 export class ReviewModule {}

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Review } from './review.entity';
 import { Book } from '../book/book.entity';
 import { CreateReviewDto } from './dto/review.dto';
+import { Author } from 'src/author/author.entity';
 
 @Injectable()
 export class ReviewService {
@@ -12,6 +13,8 @@ export class ReviewService {
     private reviewRepository: Repository<Review>,
     @InjectRepository(Book)
     private bookRepository: Repository<Book>,
+    @InjectRepository(Author)
+    private authorRepository: Repository<Author>,
   ) {}
 
   async findAll(bookId: number, sort: 'asc' | 'desc' = 'asc'): Promise<Review[]> {
@@ -43,10 +46,35 @@ export class ReviewService {
       
       // Sauvegarde la nouvelle note moyenne
       await this.bookRepository.save(book);
+      await this.updateAuthorAverageRating(book.author.id);
     } else if (book) {
       // Si aucun avis n'est présent, on peut mettre la note moyenne à 0
       book.rating = 0;
       await this.bookRepository.save(book);
+      await this.updateAuthorAverageRating(book.author.id);
+    }
+  }
+
+  private async updateAuthorAverageRating(authorId: number): Promise<void> {
+    // Récupère l'auteur 
+    const author = await this.authorRepository.findOne({
+      where: { id: authorId },
+      relations: ['books'], 
+    });
+  
+    if (author && author.books.length > 0) {
+      // Calcule la somme des notes moyennes des livres
+      const totalBookRating = author.books.reduce((sum, book) => sum + (book.rating || 0), 0);
+  
+      // Calcule la moyenne des moyennes des livres
+      author.rating = totalBookRating / author.books.length;
+  
+      // Sauvegarde la nouvelle note moyenne de l'auteur
+      await this.authorRepository.save(author);
+    } else if (author) {
+      // Si l'auteur n'a pas de livres ou tous ses livres ont des notes nulles
+      author.rating = 0;
+      await this.authorRepository.save(author);
     }
   }
 
