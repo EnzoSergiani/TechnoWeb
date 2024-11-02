@@ -13,8 +13,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="books" element={<BooksIndex />} />
           <Route path="books/:bookId" element={<BookDetail />} />
-          <Route path="author" element={<AuthorsIndex />} />
-          <Route path="author/:authorId" element={<AuthorDetails />} />
+          <Route path="authors" element={<AuthorsIndex />} />
+          <Route path="authors/:authorId" element={<AuthorDetails />} />
           {/* <Route path="*" element={<Error />} /> */}
         </Routes>
       </BrowserRouter>
