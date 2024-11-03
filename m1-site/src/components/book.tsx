@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 interface BookProps {
   id: number;
   title: string;
-  date: string;
+  date: number;
   author: string;
-  averageRating: number;
+  averageRating?: number;
 }
 
 const Book: React.FC<BookProps> = ({

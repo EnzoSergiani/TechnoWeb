@@ -12,6 +12,9 @@ export class Author {
   @Column({ nullable: true })
   profilePicture?: string; 
 
+  @Column({nullable: true})
+  numberOfBooks: number;
+
   @OneToMany(() => Book, (book) => book.author)
   books: Book[];
 
