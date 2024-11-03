@@ -19,7 +19,7 @@ export interface BookInterface {
 
 export interface ReviewInterface {
     id: number;
-    rating: 0 | 1 | 2 | 3 | 4 | 5; 
+    rating: number; 
     comment?: string;
     createdAt: Date;
     book: BookInterface;

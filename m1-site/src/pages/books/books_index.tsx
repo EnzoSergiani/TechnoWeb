@@ -3,13 +3,14 @@ import Header from "../../components/header";
 import SearchBar from "../../components/searchBar";
 import Book from "../../components/book";
 import Sorting from "../../components/sorting";
-import { BookInterface } from "../../export/interface";
+import { BookInterface, ReviewInterface } from "../../export/interface";
 import {
   createBook,
   deleteBookById,
   fetchAllBooks,
   fetchBookById,
 } from "../../online/book/book";
+import { createReview, fetchReviewsByBookId } from "../../online/review/review";
 
 const BooksIndex: React.FC = () => {
   // interface Book {
@@ -106,7 +107,20 @@ const BooksIndex: React.FC = () => {
     console.log("create:", response);
   };
 
-  //A supprimer
+  const handleCreateReview = async (
+    bookId: number,
+    reviewData: Omit<ReviewInterface, "id" | "createdAt" | "book">
+  ) => {
+    const response = await createReview(bookId, reviewData);
+    console.log("review created", response);
+  };
+
+  const handleFetchReviewsByBookId = async (bookId: number) => {
+    const response = await fetchReviewsByBookId(bookId);
+    console.log("reviews:", response);
+  };
+
+  //! À supprimer
   const bookDataTest: BookInterface = {
     title: "prout prout",
     publicationYear: 2024,
@@ -114,6 +128,10 @@ const BooksIndex: React.FC = () => {
     author: {
       id: 1,
     },
+  };
+  const reviewDataTest = {
+    rating: 3,
+    comment: "Excellent book!",
   };
 
   useEffect(() => {
@@ -152,6 +170,16 @@ const BooksIndex: React.FC = () => {
         </div>
         <div onClick={() => handleCreateBook(bookDataTest)}>
           C'est mouah mais pour créer un livre
+        </div>
+        <div
+          onClick={() => {
+            handleCreateReview(5, reviewDataTest);
+          }}
+        >
+          Create review book id 5
+        </div>
+        <div onClick={() => handleFetchReviewsByBookId(5)}>
+          fetch reviews book id 5
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center row-gap-8 gap-y-8">
           {filteredBooks.map((book) => (
