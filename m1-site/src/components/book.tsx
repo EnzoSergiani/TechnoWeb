@@ -3,10 +3,10 @@ import imgPath from "../assets/images/book.jpeg";
 import { useNavigate } from "react-router-dom";
 
 interface BookProps {
-  id: number;
+  id?: number;
   title: string;
   date: number;
-  author: string;
+  author?: string;
   averageRating?: number;
 }
 

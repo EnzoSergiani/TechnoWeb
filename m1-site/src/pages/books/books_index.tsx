@@ -4,7 +4,12 @@ import SearchBar from "../../components/searchBar";
 import Book from "../../components/book";
 import Sorting from "../../components/sorting";
 import { BookInterface } from "../../export/interface";
-import { fetchAllBooks } from "../../online/book/book";
+import {
+  createBook,
+  deleteBookById,
+  fetchAllBooks,
+  fetchBookById,
+} from "../../online/book/book";
 
 const BooksIndex: React.FC = () => {
   // interface Book {
@@ -82,9 +87,33 @@ const BooksIndex: React.FC = () => {
   const [newBook, setNewBook] = useState({ title: "", date: "", author: "" });
 
   const fetchBooks = async () => {
-    const lobbies = await fetchAllBooks();
-    console.log("1111");
-    setBooks(lobbies);
+    const books = await fetchAllBooks();
+    setBooks(books);
+  };
+
+  const handleFetchBookById = async (id: number) => {
+    const book = await fetchBookById(id);
+    console.log("book:", book);
+  };
+
+  const handleDeleteBookById = async (id: number) => {
+    const response = await deleteBookById(id);
+    console.log("response delete:", response);
+  };
+
+  const handleCreateBook = async (bookData: BookInterface) => {
+    const response = await createBook(bookData);
+    console.log("create:", response);
+  };
+
+  //A supprimer
+  const bookDataTest: BookInterface = {
+    title: "prout prout",
+    publicationYear: 2024,
+    price: 3,
+    author: {
+      id: 1,
+    },
   };
 
   useEffect(() => {
@@ -116,6 +145,13 @@ const BooksIndex: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <SearchBar onSearch={handleSearch} />
           <Sorting value={sortOption} onChange={handleSort} />
+        </div>
+        <div onClick={() => handleFetchBookById(4)}>C'est mouah</div>
+        <div onClick={() => handleDeleteBookById(4)}>
+          C'est mouah mais pour supprimer
+        </div>
+        <div onClick={() => handleCreateBook(bookDataTest)}>
+          C'est mouah mais pour créer un livre
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center row-gap-8 gap-y-8">
           {filteredBooks.map((book) => (

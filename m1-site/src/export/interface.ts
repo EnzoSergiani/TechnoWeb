@@ -1,20 +1,20 @@
 export interface AuthorInterface {
     id: number;
-    name: string;
+    name?: string;
     profilePicture?: string;
     numberOfBooks?: number;
-    books: BookInterface[];
+    books?: BookInterface[];
     rating?: number;
 }
 
 export interface BookInterface {
-    id: number;
+    id?: number;
     title: string;
     price: number;
     publicationYear: number;
     rating?: number;
     author: AuthorInterface;
-    reviews: ReviewInterface[];
+    reviews?: ReviewInterface[];
 }
 
 export interface ReviewInterface {
