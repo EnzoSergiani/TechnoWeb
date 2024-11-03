@@ -107,7 +107,7 @@ const BooksIndex: React.FC = () => {
     price: 2,
     publicationYear: 1700,
     author: {
-      id: 1,
+      id: 3,
     },
   };
 
@@ -139,8 +139,8 @@ const BooksIndex: React.FC = () => {
       <div onClick={() => handleCreateBook(bookDataTest)}>
         Add book to autor 0
       </div>
-      <div onClick={() => handleDeleteBook(6)}>Book 6</div>
-      <div onClick={() => handleDeleteBook(7)}>Book 7</div>
+      <div onClick={() => handleDeleteBook(6)}>Delete Book 6</div>
+      <div onClick={() => handleDeleteBook(7)}>Delete Book 7</div>
       <div id="body" className="p-10">
         <div className="flex justify-between items-center mb-4">
           <SearchBar onSearch={handleSearch} />

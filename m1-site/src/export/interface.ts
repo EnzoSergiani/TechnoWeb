@@ -5,6 +5,7 @@ export interface AuthorInterface {
     numberOfBooks?: number;
     books?: BookInterface[];
     rating?: number;
+    description?: string;
 }
 
 export interface BookInterface {
