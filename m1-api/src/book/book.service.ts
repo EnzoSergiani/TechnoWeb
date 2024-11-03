@@ -40,10 +40,26 @@ export class BookService {
       author: authorEntity,
     });
 
+    authorEntity.numberOfBooks += 1;
+    await this.authorRepository.save(authorEntity);
     return this.bookRepository.save(book);
   }
 
   async delete(id: number){
+    const bookEntity = await this.bookRepository.findOne({where : {id: id}});
+    const authorEntity = await this.authorRepository.findOne({ where: { id: bookEntity.author.id } });
+
+    if (!bookEntity) {
+      throw new NotFoundException(`Book with ID ${id} not found`);
+    }
+
+    if (!authorEntity) {
+      throw new NotFoundException(`Author with ID ${bookEntity.author.id} not found`);
+    }
+
+    authorEntity.numberOfBooks -=1;
+    await this.authorRepository.save(authorEntity);
+    
     return await this.bookRepository.delete(id).then(() => {});
   }
   

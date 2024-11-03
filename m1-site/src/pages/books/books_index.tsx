@@ -92,6 +92,25 @@ const BooksIndex: React.FC = () => {
     setBooks(books);
   };
 
+  const handleCreateBook = async (bookData: BookInterface) => {
+    const book = await createBook(bookData);
+    console.log("1:", book);
+  };
+
+  const handleDeleteBook = async (id: number) => {
+    const response = await deleteBookById(id);
+    console.log(response);
+  };
+
+  const bookDataTest: BookInterface = {
+    title: "la mama2",
+    price: 2,
+    publicationYear: 1700,
+    author: {
+      id: 1,
+    },
+  };
+
   useEffect(() => {
     fetchBooks();
   }, []);
@@ -117,6 +136,11 @@ const BooksIndex: React.FC = () => {
   return (
     <div id="container" className="w-full min-h-screen bg-gray-200">
       <Header text="Bibliothèque" />
+      <div onClick={() => handleCreateBook(bookDataTest)}>
+        Add book to autor 0
+      </div>
+      <div onClick={() => handleDeleteBook(6)}>Book 6</div>
+      <div onClick={() => handleDeleteBook(7)}>Book 7</div>
       <div id="body" className="p-10">
         <div className="flex justify-between items-center mb-4">
           <SearchBar onSearch={handleSearch} />

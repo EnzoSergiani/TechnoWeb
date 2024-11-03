@@ -21,6 +21,7 @@ const AuthorsIndex: React.FC = () => {
   return (
     <div id="container" className="w-full h-screen bg-gray-200">
       <Header text="Auteurs" />
+      <div onClick={() => handleFetchAllAuthors()}>Fetch tous les auteurs</div>
       <div
         id="body"
         className="flex flex-row justify-center items-center mt-5 z-10"
