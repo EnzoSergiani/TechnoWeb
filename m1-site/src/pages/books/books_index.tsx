@@ -92,48 +92,6 @@ const BooksIndex: React.FC = () => {
     setBooks(books);
   };
 
-  const handleFetchBookById = async (id: number) => {
-    const book = await fetchBookById(id);
-    console.log("book:", book);
-  };
-
-  const handleDeleteBookById = async (id: number) => {
-    const response = await deleteBookById(id);
-    console.log("response delete:", response);
-  };
-
-  const handleCreateBook = async (bookData: BookInterface) => {
-    const response = await createBook(bookData);
-    console.log("create:", response);
-  };
-
-  const handleCreateReview = async (
-    bookId: number,
-    reviewData: Omit<ReviewInterface, "id" | "createdAt" | "book">
-  ) => {
-    const response = await createReview(bookId, reviewData);
-    console.log("review created", response);
-  };
-
-  const handleFetchReviewsByBookId = async (bookId: number) => {
-    const response = await fetchReviewsByBookId(bookId);
-    console.log("reviews:", response);
-  };
-
-  //! À supprimer
-  const bookDataTest: BookInterface = {
-    title: "prout prout",
-    publicationYear: 2024,
-    price: 3,
-    author: {
-      id: 1,
-    },
-  };
-  const reviewDataTest = {
-    rating: 3,
-    comment: "Excellent book!",
-  };
-
   useEffect(() => {
     fetchBooks();
   }, []);
@@ -163,23 +121,6 @@ const BooksIndex: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <SearchBar onSearch={handleSearch} />
           <Sorting value={sortOption} onChange={handleSort} />
-        </div>
-        <div onClick={() => handleFetchBookById(4)}>C'est mouah</div>
-        <div onClick={() => handleDeleteBookById(4)}>
-          C'est mouah mais pour supprimer
-        </div>
-        <div onClick={() => handleCreateBook(bookDataTest)}>
-          C'est mouah mais pour créer un livre
-        </div>
-        <div
-          onClick={() => {
-            handleCreateReview(5, reviewDataTest);
-          }}
-        >
-          Create review book id 5
-        </div>
-        <div onClick={() => handleFetchReviewsByBookId(5)}>
-          fetch reviews book id 5
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center row-gap-8 gap-y-8">
           {filteredBooks.map((book) => (
