@@ -48,6 +48,7 @@ export default function Book({ params }: { params: { id: string } }) {
                 <CurrencyDollarIcon className="size-4" />
                 <span>{book.price}</span>
               </Badge>
+              <Badge color="red">N{book.id}</Badge>
             </div>
             <div className="mt-2 text-sm/6 text-zinc-500">{book.publicationYear}</div>
           </div>
