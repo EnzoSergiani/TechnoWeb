@@ -1,8 +1,5 @@
-'use client';
-import './App.css';
+import { redirect } from 'next/navigation'
 
-function App() {
-  return <h1>Hello World!</h1>
+export default async function Home() {
+  redirect('/books')
 }
-
-export default App;

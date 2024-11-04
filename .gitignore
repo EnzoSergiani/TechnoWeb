@@ -59,3 +59,12 @@ lerna-debug.log*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+m1-site/out
+m1-site/node_modules
+m1-site/.next
+m1-site/.next/*
+
+m1-api/node_modules/
+m1-api/dist/
+m1-api/.env
