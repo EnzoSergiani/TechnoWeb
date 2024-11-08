@@ -10,6 +10,9 @@ export class CreateBookDto {
   @IsNumber()
   publicationYear: number;
 
+  @IsString()
+  coverPhoto: string;
+
   @IsObject()
   author: {
     id: number;

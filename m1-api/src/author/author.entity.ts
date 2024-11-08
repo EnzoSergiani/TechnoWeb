@@ -20,4 +20,7 @@ export class Author {
 
   @Column('float', { nullable: true })
   rating: number; 
+
+  @Column({ nullable: true})
+  description: string;
 }
