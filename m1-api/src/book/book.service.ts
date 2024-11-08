@@ -24,7 +24,7 @@ export class BookService {
   }
 
   async create(createBookDto: CreateBookDto): Promise<Book> {
-    const { title, price, publicationYear, author } = createBookDto;
+    const { title, price, publicationYear, coverPhoto, author } = createBookDto;
 
     // Recherche de l'auteur dans la base de données
     const authorEntity = await this.authorRepository.findOne({ where: { id: author.id } });
@@ -37,6 +37,7 @@ export class BookService {
       title,
       price,
       publicationYear,
+      coverPhoto,
       author: authorEntity,
     });
 
