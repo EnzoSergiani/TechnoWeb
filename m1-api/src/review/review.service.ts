@@ -56,24 +56,29 @@ export class ReviewService {
   }
 
   private async updateAuthorAverageRating(authorId: number): Promise<void> {
-    // Récupère l'auteur 
+    // Récupère l'auteur
     const author = await this.authorRepository.findOne({
       where: { id: authorId },
-      relations: ['books'], 
+      relations: ['books', 'books.reviews'], 
     });
   
     if (author && author.books.length > 0) {
-      // Calcule la somme des notes moyennes des livres
-      const totalBookRating = author.books.reduce((sum, book) => sum + (book.rating || 0), 0);
+      let totalRating = 0;
+      let totalReviews = 0;
   
-      // Calcule la moyenne des moyennes des livres
-      author.rating = totalBookRating / author.books.length;
+      // Parcours chaque livre et chaque avis pour additionner les notes
+      for (const book of author.books) {
+        for (const review of book.reviews) {
+          totalRating += review.rating;
+          totalReviews++;
+        }
+      }
   
-      // Sauvegarde la nouvelle note moyenne de l'auteur
+      author.rating = totalReviews > 0 ? totalRating / totalReviews : 0; // Calcule la moyenne des notes de tous les avis
+
       await this.authorRepository.save(author);
     } else if (author) {
-      // Si l'auteur n'a pas de livres ou tous ses livres ont des notes nulles
-      author.rating = 0;
+      author.rating = 0; // Auteur sans avis alors set à 0
       await this.authorRepository.save(author);
     }
   }
@@ -81,13 +86,12 @@ export class ReviewService {
   async create(bookId: number, createReviewDto: CreateReviewDto): Promise<Review> {
     const { rating, comment } = createReviewDto;
   
-    // Récupère le livre pour lequel l'avis est ajouté
+    // Récupère le livre
     const book = await this.bookRepository.findOne({ where: { id: bookId } });
     if (!book) {
       throw new NotFoundException(`Book with ID ${bookId} not found`);
     }
   
-    // Crée et enregistre l'avis
     const review = this.reviewRepository.create({
       rating,
       comment,

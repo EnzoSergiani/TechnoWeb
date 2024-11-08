@@ -8,4 +8,8 @@ export class UpdateAuthorDto {
   @IsOptional()
   @IsString()
   profilePicture?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 }
