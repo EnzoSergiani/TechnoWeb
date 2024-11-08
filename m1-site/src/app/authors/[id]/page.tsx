@@ -7,17 +7,33 @@ import { DescriptionDetails, DescriptionList, DescriptionTerm } from '@/componen
 import { Divider } from '@/components/divider'
 import { Heading, Subheading } from '@/components/heading'
 import { Link } from '@/components/link'
+import { ModalUnassign } from '@/components/modalUnassign'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
 import { getAuthor } from '@/data'
 import { CalendarIcon, ChevronLeftIcon } from '@heroicons/react/16/solid'
 import { notFound } from 'next/navigation'
+import { useState } from 'react'
 
 export default function author({ params }: { params: { id: string } }) {
   let author = getAuthor(params.id)
 
   if (!author) {
     notFound()
+  }
+
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
+
+  const openAlert = () => setIsAlertOpen(true)
+  const closeAlert = () => setIsAlertOpen(false)
+
+  const handleUnassignAuthor = (bookId: number) => {
+    if (isAlertOpen) {
+      // call backend to unassign author
+      closeAlert()
+    } else {
+      openAlert()
+    }
   }
 
   return (
@@ -87,14 +103,21 @@ export default function author({ params }: { params: { id: string } }) {
               <TableCell className="text-zinc-500">{book.publicationYear}</TableCell>
               <TableCell>{book.title}</TableCell>
               <TableCell>{book.rating}</TableCell>
-              <TableCell
-                onClick={() => {
-                  throw new Error('Not implemented')
-                }}
-                className="text-red-500 hover:underline"
-              >
-                Unassign
+              <TableCell>
+                <Button
+                  onClick={() => handleUnassignAuthor(book.id)}
+                  color="none"
+                  className="border border-red-600 text-red-600 transition duration-300 hover:bg-red-600 hover:text-white"
+                >
+                  Unassign
+                </Button>
               </TableCell>
+              <ModalUnassign
+                isOpen={isAlertOpen}
+                onClose={closeAlert}
+                onConfirm={handleUnassignAuthor}
+                bookId={book.id}
+              />
             </TableRow>
           ))}
         </TableBody>
