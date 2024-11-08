@@ -11,6 +11,7 @@ import { ModalUnassign } from '@/components/modalUnassign'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
 import { getAuthor } from '@/data'
+import { unassignAuthorFromBook } from '@/online/author/author'
 import { CalendarIcon, ChevronLeftIcon } from '@heroicons/react/16/solid'
 import { notFound } from 'next/navigation'
 import { useState } from 'react'
@@ -27,9 +28,9 @@ export default function author({ params }: { params: { id: string } }) {
   const openAlert = () => setIsAlertOpen(true)
   const closeAlert = () => setIsAlertOpen(false)
 
-  const handleUnassignAuthor = (bookId: number) => {
+  const handleUnassignAuthor = (authorId: number, bookId: number) => {
     if (isAlertOpen) {
-      // call backend to unassign author
+      unassignAuthorFromBook(authorId, bookId)
       closeAlert()
     } else {
       openAlert()
@@ -105,7 +106,7 @@ export default function author({ params }: { params: { id: string } }) {
               <TableCell>{book.rating}</TableCell>
               <TableCell>
                 <Button
-                  onClick={() => handleUnassignAuthor(book.id)}
+                  onClick={() => handleUnassignAuthor(author.id, book.id)}
                   color="none"
                   className="border border-red-600 text-red-600 transition duration-300 hover:bg-red-600 hover:text-white"
                 >
@@ -116,6 +117,7 @@ export default function author({ params }: { params: { id: string } }) {
                 isOpen={isAlertOpen}
                 onClose={closeAlert}
                 onConfirm={handleUnassignAuthor}
+                authorId={author.id}
                 bookId={book.id}
               />
             </TableRow>

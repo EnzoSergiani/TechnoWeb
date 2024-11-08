@@ -54,3 +54,13 @@ export const deleteAuthorById = async (id: number): Promise<void> => {
       throw error;
     }
 };
+
+export const unassignAuthorFromBook = async (authorId: number, bookId: number): Promise<void> => {
+    try {
+      await axiosApi.delete(`/authors/${authorId}/books/${bookId}`);
+      console.log("Author unassigned from book:", authorId, bookId);
+    } catch (error) {
+      console.error("Error unassigning author from book:", error);
+      throw error;
+    }
+}
