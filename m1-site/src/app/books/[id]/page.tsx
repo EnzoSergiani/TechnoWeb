@@ -3,32 +3,57 @@ import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
 import { Heading, Subheading } from '@/components/heading'
-import { Link } from '@/components/link'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
-import { getBook } from '@/data'
-import { ChevronLeftIcon } from '@heroicons/react/16/solid'
-import { CurrencyDollarIcon } from '@heroicons/react/20/solid'
+import type { Book } from '@/data'
+import { useBook } from '@/providers/useBookProviders'
+import { ChevronLeftIcon, CurrencyDollarIcon } from '@heroicons/react/16/solid'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { useState } from 'react'
-
+import { useEffect, useState } from 'react'
 export default function Book({ params }: { params: { id: string } }) {
-  let book = getBook(params.id)
+  const bookProv = useBook()
 
-  if (!book) {
-    notFound()
+  const [book, setBook] = useState<Book | null>()
+  const [loading, setLoading] = useState(true)
+
+  const fetchBookById = async () => {
+    try {
+      setBook(await bookProv.loadById(params.id))
+    } catch (error) {
+      console.error('Error loading books:', error)
+    } finally {
+      setLoading(false)
+    }
   }
+  useEffect(() => {
+    fetchBookById()
+  }, [])
 
-  let author = book.author
+  useEffect(() => {
+    if (!book && !loading) {
+      notFound()
+    }
+  }, [book])
+
+  let author = book?.author
   let review = Number(
-    book.reviews
-      .map((review) => {
+    book?.reviews
+      ?.map((review: { rating: any }) => {
         return review.rating
       })
-      .reduce((acc, curr) => acc + curr, 0) / book.reviews.length
+      .reduce((acc: any, curr: any) => acc + curr, 0) / (book?.reviews?.length ?? 0)
   )
 
+  if (isNaN(review)) {
+    review = 0
+  }
+
   const [asc, setAsc] = useState(true)
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
 
   return (
     <>
@@ -42,15 +67,15 @@ export default function Book({ params }: { params: { id: string } }) {
         <div className="flex flex-wrap items-center gap-6">
           <div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <Heading>{book.title}</Heading>
+              <Heading>{book?.title}</Heading>
               <Rating rating={review} />
               <Badge color={'yellow'} className="flex items-center justify-center">
                 <CurrencyDollarIcon className="size-4" />
-                <span>{book.price}</span>
+                <span>{book?.price}</span>
               </Badge>
-              <Badge color="red">N{book.id}</Badge>
+              <Badge color="red">N{book?.id}</Badge>
             </div>
-            <div className="mt-2 text-sm/6 text-zinc-500">{book.publicationYear}</div>
+            <div className="mt-2 text-sm/6 text-zinc-500">{book?.publicationYear}</div>
           </div>
         </div>
         <div className="flex gap-2">
@@ -70,16 +95,16 @@ export default function Book({ params }: { params: { id: string } }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          <TableRow key={author.id} href={`/authors/${author.id}`} title={`Order #${author.id}`}>
-            <TableCell>{author.id}</TableCell>
+          <TableRow key={author?.id} href={`/authors/${author?.id}`} title={`Order #${author?.id}`}>
+            <TableCell>{author?.id}</TableCell>
             <TableCell>
               <div className="flex items-center gap-2">
-                <Avatar src={author.profilePicture} className="size-6" />
-                <span>{author.name}</span>
+                <Avatar src={author?.profilePicture} className="size-6" />
+                <span>{author?.name}</span>
               </div>
             </TableCell>
-            <TableCell>{author.numberOfBooks}</TableCell>
-            <TableCell>{author.rating}</TableCell>
+            <TableCell>{author?.numberOfBooks}</TableCell>
+            <TableCell>{author?.rating}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -99,18 +124,18 @@ export default function Book({ params }: { params: { id: string } }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {book.reviews
-            .sort((a, b) =>
+          {book?.reviews
+            ?.sort((a, b) =>
               asc ? a.createdAt.getTime() - b.createdAt.getTime() : b.createdAt.getTime() - a.createdAt.getTime()
             )
             .map((review) => (
-              <TableRow key={review.id} href={`/reviews/${review.id}`} title={`Review #${review.id}`}>
-                <TableCell>{review.id}</TableCell>
+              <TableRow key={review?.id} href={`/reviews/${review?.id}`} title={`Review #${review?.id}`}>
+                <TableCell>{review?.id}</TableCell>
                 <TableCell>
-                  <Rating rating={review.rating} />
+                  <Rating rating={review?.rating} />
                 </TableCell>
-                <TableCell>{review.comment}</TableCell>
-                <TableCell>{review.createdAt.toDateString()}</TableCell>
+                <TableCell>{review?.comment}</TableCell>
+                <TableCell>{review?.createdAt.toDateString()}</TableCell>
               </TableRow>
             ))}
         </TableBody>
