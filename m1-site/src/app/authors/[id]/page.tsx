@@ -10,11 +10,10 @@ import { Link } from '@/components/link'
 import { ModalUnassign } from '@/components/modalUnassign'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
-import { getAuthor } from '@/data'
-import { unassignAuthorFromBook } from '@/online/author/author'
-import { CalendarIcon, ChevronLeftIcon } from '@heroicons/react/16/solid'
 import { Author } from '@/data'
+import { unassignAuthorFromBook } from '@/online/author/author'
 import { useAuthor } from '@/providers/useAuthorsProviders'
+import { CalendarIcon, ChevronLeftIcon } from '@heroicons/react/16/solid'
 import { notFound } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -40,13 +39,15 @@ export default function author({ params }: { params: { id: string } }) {
   }, [])
 
   const [isAlertOpen, setIsAlertOpen] = useState(false)
+  const [currentBookId, setCurrentBookId] = useState(0)
 
   const openAlert = () => setIsAlertOpen(true)
   const closeAlert = () => setIsAlertOpen(false)
 
   const handleUnassignAuthor = (authorId: number, bookId: number) => {
+    setCurrentBookId(bookId)
     if (isAlertOpen) {
-      unassignAuthorFromBook(authorId, bookId)
+      unassignAuthorFromBook(authorId, currentBookId)
       closeAlert()
     } else {
       openAlert()

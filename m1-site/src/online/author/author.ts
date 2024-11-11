@@ -56,11 +56,21 @@ export const deleteAuthorById = async (id: number): Promise<void> => {
 };
 
 export const unassignAuthorFromBook = async (authorId: number, bookId: number): Promise<void> => {
-    try {
-      await axiosApi.delete(`/authors/${authorId}/books/${bookId}`);
-      console.log("Author unassigned from book:", authorId, bookId);
-    } catch (error) {
-      console.error("Error unassigning author from book:", error);
-      throw error;
+  try{
+    if (!authorId || !bookId) {
+      throw new Error("Author or book id not provided");
     }
-}
+    const getAuthor = await fetchAuthorById(authorId);
+    if (!getAuthor) {
+      throw new Error("Author not found");
+    }
+    const updatedBooks = getAuthor.books ? getAuthor.books.filter((book) => book.id !== bookId) : [];
+    const updatedAuthor = { ...getAuthor, books: updatedBooks };
+    await axiosApi.put(`/authors/${authorId}`, updatedAuthor);
+    console.log("Author updated:", updatedAuthor);
+  }
+  catch(error){
+    console.error("Error unassigning author from book:", error);
+    throw error;
+  }
+}; 
