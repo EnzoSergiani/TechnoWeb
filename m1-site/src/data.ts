@@ -16,7 +16,14 @@ export interface Book {
   author: Author
   reviews: Review[]
 }
-
+export interface newBook {
+  title: string
+  author: {
+    id: number
+  }
+  price: number
+  publicationYear: number
+}
 export interface Review {
   id: number
   rating: number // Between 1 and 5 stars

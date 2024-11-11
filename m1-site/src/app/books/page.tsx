@@ -3,6 +3,8 @@
 import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
+import { CreateBook } from '@/components/createBook'
+import { Dialog, DialogBody, DialogTitle } from '@/components/dialog'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown'
 import { Heading } from '@/components/heading'
 import { Input, InputGroup } from '@/components/input'
@@ -13,12 +15,12 @@ import { useBook } from '@/providers/useBookProviders'
 
 import { CurrencyDollarIcon, EllipsisVerticalIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { useEffect, useRef, useState } from 'react'
-
 export default function Books() {
   const bookProv = useBook()
-  const [books, setBooks] = useState<Book[]>([])
+  const [books, setBooks] = useState<Book[]>(bookProv.booksProv)
   const [searchTerm, setSearchTerm] = useState('')
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
+  const [openCreateBook, setOpenCreateBook] = useState(false)
 
   const fetchBooks = async () => {
     try {
@@ -27,8 +29,9 @@ export default function Books() {
       console.error('Error loading books:', error)
     }
   }
-  function getBooks(searchTerm: string = '') {
-    return books.filter((book) => book.title.toLowerCase().includes(searchTerm.toLowerCase()))
+  async function getBooks(searchTerm: string = '') {
+    const booksToFilter = await bookProv.load()
+    return booksToFilter.filter((book) => book.title.toLowerCase().includes(searchTerm.toLowerCase()))
   }
 
   useEffect(() => {
@@ -36,14 +39,18 @@ export default function Books() {
   }, [])
 
   useEffect(() => {
+    setBooks(bookProv.booksProv)
+  }, [bookProv.booksProv])
+
+  useEffect(() => {
     if (timeoutId.current) {
       clearTimeout(timeoutId.current)
     }
 
-    timeoutId.current = setTimeout(() => {
+    timeoutId.current = setTimeout(async () => {
       // Perform search
-      const books = getBooks(searchTerm)
-      // setBooks(books)
+      const booksSearch = await getBooks(searchTerm)
+      setBooks(booksSearch)
     }, 1000)
 
     return () => {
@@ -64,12 +71,24 @@ export default function Books() {
     setBooks(sortedBooks)
     setAsc(!asc)
   }
+  function handleCreateBook() {
+    setOpenCreateBook(true)
+  }
   return (
     <>
+      <Dialog title="Sort by" className="dialog" open={openCreateBook} onClose={() => setOpenCreateBook(false)}>
+        <DialogTitle>Add a new book</DialogTitle>
+        <DialogBody>
+          <CreateBook setOpenDialog={setOpenCreateBook} />
+        </DialogBody>
+      </Dialog>
+
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between gap-4">
           <Heading>Books</Heading>
-          <Button className="-my-0.5">Create book</Button>
+          <Button className="-my-0.5" onClick={handleCreateBook}>
+            Create book
+          </Button>
         </div>
         <div className="flex-1">
           <InputGroup>
