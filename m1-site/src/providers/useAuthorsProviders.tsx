@@ -1,10 +1,10 @@
 import { Author } from '@/data'
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 type AuthorContextType = {
   authorsProv: Author[]
   load: () => Promise<Author[]>
-  loadById(id: string): Promise<Author | null>
+  loadById(id: number): Promise<Author | null>
 }
 
 export const AuthorContext = createContext<AuthorContextType | undefined>(undefined)
@@ -24,7 +24,7 @@ export const AuthorProviders = ({ children }: { children: React.ReactNode }) => 
       return []
     }
   }
-  const loadById = async (id: string): Promise<Author | null> => {
+  const loadById = async (id: number): Promise<Author | null> => {
     try {
       const response = await fetch(`http://localhost:3001/authors/${id}`)
       const data = await response.json()
@@ -34,6 +34,9 @@ export const AuthorProviders = ({ children }: { children: React.ReactNode }) => 
       return null
     }
   }
+  useEffect(() => {
+    load()
+  }, [])
 
   return <AuthorContext.Provider value={{ authorsProv, load, loadById }}>{children}</AuthorContext.Provider>
 }
