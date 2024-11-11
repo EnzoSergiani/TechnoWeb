@@ -1,11 +1,12 @@
 import { Book } from '@/data'
 import { createContext, useContext, useState } from 'react'
+import axiosApi from './axiosApi'
 
 type BookContextType = {
   booksProv: Book[]
   load: () => Promise<Book[]>
   loadById(id: string): Promise<Book | null>
-  // onCreate: (book: Book) => void
+  createBook: (book: any) => Promise<void>
 }
 
 export const BookContext = createContext<BookContextType | undefined>(undefined)
@@ -35,8 +36,19 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
       return null
     }
   }
+  const createBook = async (bookData: any) => {
+    try {
+      const response = await axiosApi.post('/books', bookData)
+      //console.log("Book created:", response.data);
+      load()
+      return response.data
+    } catch (error) {
+      console.error('Error creating book:', error)
+    }
+  }
 
-  return <BookContext.Provider value={{ booksProv, load, loadById }}>{children}</BookContext.Provider>
+  // Update the BookContext.Provider value
+  return <BookContext.Provider value={{ booksProv, load, loadById, createBook }}>{children}</BookContext.Provider>
 }
 
 export const useBook = () => {

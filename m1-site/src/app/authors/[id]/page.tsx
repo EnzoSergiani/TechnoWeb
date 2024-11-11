@@ -17,7 +17,7 @@ import { CalendarIcon, ChevronLeftIcon } from '@heroicons/react/16/solid'
 import { notFound } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-export default function author({ params }: { params: { id: string } }) {
+export default function author({ params }: { params: { id: number } }) {
   // let author = getAuthor(params.id)
 
   const authorProv = useAuthor()
