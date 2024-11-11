@@ -13,15 +13,31 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { getAuthor } from '@/data'
 import { unassignAuthorFromBook } from '@/online/author/author'
 import { CalendarIcon, ChevronLeftIcon } from '@heroicons/react/16/solid'
+import { Author } from '@/data'
+import { useAuthor } from '@/providers/useAuthorsProviders'
 import { notFound } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function author({ params }: { params: { id: string } }) {
-  let author = getAuthor(params.id)
+  // let author = getAuthor(params.id)
 
-  if (!author) {
-    notFound()
+  const authorProv = useAuthor()
+
+  const [author, setAuthor] = useState<Author | null>()
+  const [loading, setLoading] = useState(true)
+
+  const fetchBookById = async () => {
+    try {
+      setAuthor(await authorProv.loadById(params.id))
+    } catch (error) {
+      console.error('Error loading author:', error)
+    } finally {
+      setLoading(false)
+    }
   }
+  useEffect(() => {
+    fetchBookById()
+  }, [])
 
   const [isAlertOpen, setIsAlertOpen] = useState(false)
 
@@ -37,6 +53,14 @@ export default function author({ params }: { params: { id: string } }) {
     }
   }
 
+  useEffect(() => {
+    if (!author && !loading) {
+      notFound()
+    }
+  }, [author])
+  if (loading) {
+    return <div>Loading...</div>
+  }
   return (
     <>
       <div className="max-lg:hidden">
@@ -47,17 +71,17 @@ export default function author({ params }: { params: { id: string } }) {
       </div>
       <div className="mt-4 lg:mt-8">
         <div className="flex items-center gap-4">
-          <Heading>{author.name}</Heading>
-          <Badge color="red">N{author.id}</Badge>
+          <Heading>{author?.name}</Heading>
+          <Badge color="red">N{author?.id}</Badge>
         </div>
         <div className="isolate mt-2.5 flex flex-wrap justify-between gap-x-6 gap-y-4">
           <div className="flex flex-wrap gap-x-10 gap-y-4 py-1.5">
-            <Rating rating={author.rating} />
+            <Rating rating={author?.rating || 0} />
             <span className="flex items-center gap-1 text-base/6 text-zinc-950 sm:text-sm/6 dark:text-white">
               <CalendarIcon className="size-4 shrink-0 fill-zinc-400 dark:fill-zinc-500" />
               <span>
                 Last publication:{' '}
-                {author.books[author.books.length - 1]?.publicationYear || "Can't find last year of publication"}
+                {author?.books[author?.books.length - 1]?.publicationYear || "Can't find last year of publication"}
               </span>
             </span>
           </div>
@@ -73,16 +97,16 @@ export default function author({ params }: { params: { id: string } }) {
         <DescriptionList>
           <DescriptionTerm>Name</DescriptionTerm>
           <DescriptionDetails>
-            <Link href={author.id.toString()} className="flex items-center gap-2">
-              <span>{author.name}</span>
+            <Link href={author?.id.toString() || '/'} className="flex items-center gap-2">
+              <span>{author?.name}</span>
             </Link>
           </DescriptionDetails>
           <DescriptionTerm>Number of books</DescriptionTerm>
-          <DescriptionDetails>{author.numberOfBooks}</DescriptionDetails>
+          <DescriptionDetails>{author?.numberOfBooks}</DescriptionDetails>
           <DescriptionTerm>Profile picture</DescriptionTerm>
           <DescriptionDetails className="flex gap-1">
-            <Avatar src={author.profilePicture} className="size-6" />
-            <span>{author.profilePicture}</span>
+            <Avatar src={author?.profilePicture} className="size-6" />
+            <span>{author?.profilePicture}</span>
           </DescriptionDetails>
         </DescriptionList>
       </div>
@@ -98,7 +122,7 @@ export default function author({ params }: { params: { id: string } }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {author.books.map((book) => (
+          {author?.books.map((book) => (
             <TableRow key={book.id} href={`/books/${book.id}`} title={`Book #${book.id}`}>
               <TableCell>{book.id}</TableCell>
               <TableCell className="text-zinc-500">{book.publicationYear}</TableCell>

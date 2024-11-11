@@ -8,14 +8,32 @@ import { Heading } from '@/components/heading'
 import { Input, InputGroup } from '@/components/input'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
-import { Book, getBooks } from '@/data'
+import { Book } from '@/data'
+import { useBook } from '@/providers/useBookProviders'
+
 import { CurrencyDollarIcon, EllipsisVerticalIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { useEffect, useRef, useState } from 'react'
 
 export default function Books() {
+  const bookProv = useBook()
   const [books, setBooks] = useState<Book[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
+
+  const fetchBooks = async () => {
+    try {
+      setBooks(await bookProv.load())
+    } catch (error) {
+      console.error('Error loading books:', error)
+    }
+  }
+  function getBooks(searchTerm: string = '') {
+    return books.filter((book) => book.title.toLowerCase().includes(searchTerm.toLowerCase()))
+  }
+
+  useEffect(() => {
+    fetchBooks()
+  }, [])
 
   useEffect(() => {
     if (timeoutId.current) {
@@ -25,7 +43,7 @@ export default function Books() {
     timeoutId.current = setTimeout(() => {
       // Perform search
       const books = getBooks(searchTerm)
-      setBooks(books)
+      // setBooks(books)
     }, 1000)
 
     return () => {
@@ -34,11 +52,6 @@ export default function Books() {
       }
     }
   }, [searchTerm])
-
-  useEffect(() => {
-    const books = getBooks(searchTerm)
-    setBooks(books)
-  }, [])
 
   const [asc, setAsc] = useState(true)
 
@@ -108,7 +121,8 @@ export default function Books() {
         </TableHead>
         <TableBody>
           {books.map((book) => {
-            const review = book.reviews.reduce((acc, review) => acc + review.rating, 0) / book.reviews.length
+            const review =
+              book.reviews?.reduce((acc, review) => acc + review.rating, 0) / (book.reviews?.length || 1) || 0
             return (
               <TableRow key={book.id} href={`books/${book.id}`} title={`Order #${book.id}`}>
                 <TableCell>{book.id}</TableCell>

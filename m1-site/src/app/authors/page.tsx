@@ -1,20 +1,30 @@
+'use client'
+
 import { Avatar } from '@/components/avatar'
 import { Button } from '@/components/button'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown'
 import { Heading } from '@/components/heading'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
-import { getAuthors } from '@/data'
+import { Author } from '@/data'
+import { useAuthor } from '@/providers/useAuthorsProviders'
 import { EllipsisVerticalIcon } from '@heroicons/react/16/solid'
-import type { Metadata } from 'next'
+import { useEffect, useState } from 'react'
 
-export const metadata: Metadata = {
-  title: 'Authors',
-}
+export default function Authors() {
+  const authorsProv = useAuthor()
+  const [authors, setAuthors] = useState<Author[]>([])
+  const fetchAuthors = async () => {
+    try {
+      setAuthors(await authorsProv.load())
+    } catch (error) {
+      console.error('Error loading books:', error)
+    }
+  }
 
-export default async function Orders() {
-  let authors = await getAuthors()
-
+  useEffect(() => {
+    fetchAuthors()
+  }, [])
   return (
     <>
       <div className="flex items-end justify-between gap-4">
@@ -41,9 +51,9 @@ export default async function Orders() {
                   <span>{author.name}</span>
                 </div>
               </TableCell>
-              <TableCell>{author.numberOfBooks}</TableCell>
+              <TableCell>{author.rating || 0}</TableCell>
               <TableCell>
-                <Rating rating={author.rating} />
+                <Rating rating={author.rating || 0} />
               </TableCell>
               <TableCell>
                 <Dropdown>
