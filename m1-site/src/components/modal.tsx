@@ -1,7 +1,8 @@
 import { Alert } from '@/components/alert'
 import { Button } from '@/components/button'
 
-type ModalUnassignProps = {
+type ModalProps = {
+  text: string
   isOpen: boolean
   onClose: () => void
   onConfirm: (authorId: number, bookId: number) => void
@@ -9,13 +10,13 @@ type ModalUnassignProps = {
   bookId: number
 }
 
-export const ModalUnassign = ({ isOpen, onClose, onConfirm, authorId, bookId }: ModalUnassignProps) => (
+export const Modal = ({ text, isOpen, onClose, onConfirm, authorId, bookId }: ModalProps) => (
   <Alert size="md" onClose={onClose} open={isOpen}>
-    You want to unassign this author from this book ?
+    {text}
     <div className="mt-4 flex justify-end gap-2">
       <Button onClick={onClose}>Cancel</Button>
       <Button color="red" onClick={() => onConfirm(authorId, bookId)}>
-        Unassign
+        Confirm
       </Button>
     </div>
   </Alert>

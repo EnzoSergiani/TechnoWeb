@@ -34,6 +34,7 @@ export const AuthorProviders = ({ children }: { children: React.ReactNode }) => 
       return null
     }
   }
+  
   useEffect(() => {
     load()
   }, [])

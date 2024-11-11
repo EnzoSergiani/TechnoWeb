@@ -7,12 +7,12 @@ import { DescriptionDetails, DescriptionList, DescriptionTerm } from '@/componen
 import { Divider } from '@/components/divider'
 import { Heading, Subheading } from '@/components/heading'
 import { Link } from '@/components/link'
-import { ModalUnassign } from '@/components/modalUnassign'
+import { Modal } from '@/components/modal'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
 import { Author } from '@/data'
-import { unassignAuthorFromBook } from '@/online/author/author'
 import { useAuthor } from '@/providers/useAuthorsProviders'
+import { useBook } from '@/providers/useBookProviders'
 import { CalendarIcon, ChevronLeftIcon } from '@heroicons/react/16/solid'
 import { notFound } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -21,6 +21,7 @@ export default function author({ params }: { params: { id: number } }) {
   // let author = getAuthor(params.id)
 
   const authorProv = useAuthor()
+  const bookProv = useBook()
 
   const [author, setAuthor] = useState<Author | null>()
   const [loading, setLoading] = useState(true)
@@ -44,10 +45,10 @@ export default function author({ params }: { params: { id: number } }) {
   const openAlert = () => setIsAlertOpen(true)
   const closeAlert = () => setIsAlertOpen(false)
 
-  const handleUnassignAuthor = (authorId: number, bookId: number) => {
+  const handleDeleteBook = (authorId: number, bookId: number) => {
     setCurrentBookId(bookId)
     if (isAlertOpen) {
-      unassignAuthorFromBook(authorId, currentBookId)
+      bookProv.deleteBook(currentBookId.toString())
       closeAlert()
     } else {
       openAlert()
@@ -131,17 +132,18 @@ export default function author({ params }: { params: { id: number } }) {
               <TableCell>{book.rating}</TableCell>
               <TableCell>
                 <Button
-                  onClick={() => handleUnassignAuthor(author.id, book.id)}
+                  onClick={() => handleDeleteBook(author.id, book.id)}
                   color="none"
                   className="border border-red-600 text-red-600 transition duration-300 hover:bg-red-600 hover:text-white"
                 >
-                  Unassign
+                  Delete
                 </Button>
               </TableCell>
-              <ModalUnassign
+              <Modal
+                text="Are you sure you want to delete this book?"
                 isOpen={isAlertOpen}
                 onClose={closeAlert}
-                onConfirm={handleUnassignAuthor}
+                onConfirm={handleDeleteBook}
                 authorId={author.id}
                 bookId={book.id}
               />
