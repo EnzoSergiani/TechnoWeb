@@ -1,11 +1,11 @@
-import { Book } from '@/data'
+import { BookProps } from '@/data'
 import { createContext, useContext, useState } from 'react'
 import axiosApi from './axiosApi'
 
 type BookContextType = {
-  booksProv: Book[]
-  load: () => Promise<Book[]>
-  loadById(id: string): Promise<Book | null>
+  booksProv: BookProps[]
+  load: () => Promise<BookProps[]>
+  loadById(id: string): Promise<BookProps | null>
   createBook: (book: any) => Promise<void>
   deleteBook: (id: number) => Promise<void>
 }
@@ -13,9 +13,9 @@ type BookContextType = {
 export const BookContext = createContext<BookContextType | undefined>(undefined)
 
 export const BookProviders = ({ children }: { children: React.ReactNode }) => {
-  const [booksProv, setBooks] = useState<Book[]>([])
+  const [booksProv, setBooks] = useState<BookProps[]>([])
 
-  const load = async (): Promise<Book[]> => {
+  const load = async (): Promise<BookProps[]> => {
     try {
       const response = await fetch('http://localhost:3001/books')
       const data = await response.json()
@@ -27,7 +27,7 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
       return []
     }
   }
-  const loadById = async (id: string): Promise<Book | null> => {
+  const loadById = async (id: string): Promise<BookProps | null> => {
     try {
       const response = await fetch(`http://localhost:3001/books/${id}`)
       const data = await response.json()
