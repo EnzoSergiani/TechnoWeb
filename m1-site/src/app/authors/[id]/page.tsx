@@ -3,6 +3,7 @@
 import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
+import { DeleteBook } from '@/components/deleteBook'
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from '@/components/description-list'
 import { Divider } from '@/components/divider'
 import { Heading, Subheading } from '@/components/heading'
@@ -11,17 +12,19 @@ import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
 import { Author } from '@/data'
 import { useAuthor } from '@/providers/useAuthorsProviders'
+import { useBook } from '@/providers/useBookProviders'
 import { CalendarIcon, ChevronLeftIcon } from '@heroicons/react/16/solid'
 import { notFound } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function author({ params }: { params: { id: number } }) {
-  // let author = getAuthor(params.id)
-
   const authorProv = useAuthor()
+  const bookProv = useBook()
 
   const [author, setAuthor] = useState<Author | null>()
   const [loading, setLoading] = useState(true)
+  const [currentBookId, setCurrentBookId] = useState<number | null>(null)
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
 
   const fetchBookById = async () => {
     try {
@@ -34,13 +37,24 @@ export default function author({ params }: { params: { id: number } }) {
   }
   useEffect(() => {
     fetchBookById()
-  }, [])
+  }, [bookProv])
+
+  const openAlert = () => setIsAlertOpen(true)
+  const closeAlert = () => setIsAlertOpen(false)
+  const handleDeleteBook = (bookId: number) => {
+    setCurrentBookId(bookId)
+    openAlert()
+  }
+  const handleConfirmDeleteBook = () => {
+    closeAlert()
+  }
 
   useEffect(() => {
     if (!author && !loading) {
       notFound()
     }
   }, [author])
+
   if (loading) {
     return <div>Loading...</div>
   }
@@ -111,14 +125,23 @@ export default function author({ params }: { params: { id: number } }) {
               <TableCell className="text-zinc-500">{book.publicationYear}</TableCell>
               <TableCell>{book.title}</TableCell>
               <TableCell>{book.rating}</TableCell>
-              <TableCell
-                onClick={() => {
-                  throw new Error('Not implemented')
-                }}
-                className="text-red-500 hover:underline"
-              >
-                Unassign
+              <TableCell>
+                <Button
+                  onClick={() => {
+                    handleDeleteBook(book.id)
+                  }}
+                  color="none"
+                  className="border border-red-600 text-red-600 transition duration-300 hover:bg-red-600 hover:text-white"
+                >
+                  Delete
+                </Button>
               </TableCell>
+              <DeleteBook
+                isOpen={isAlertOpen}
+                onClose={closeAlert}
+                onConfirm={handleConfirmDeleteBook}
+                bookId={currentBookId || 0}
+              />
             </TableRow>
           ))}
         </TableBody>
