@@ -3,11 +3,11 @@
 import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
+import { DeleteBook } from '@/components/deleteBook'
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from '@/components/description-list'
 import { Divider } from '@/components/divider'
 import { Heading, Subheading } from '@/components/heading'
 import { Link } from '@/components/link'
-import { Modal } from '@/components/modal'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
 import { Author } from '@/data'
@@ -18,13 +18,13 @@ import { notFound } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function author({ params }: { params: { id: number } }) {
-  // let author = getAuthor(params.id)
-
   const authorProv = useAuthor()
   const bookProv = useBook()
 
   const [author, setAuthor] = useState<Author | null>()
   const [loading, setLoading] = useState(true)
+  const [currentBookId, setCurrentBookId] = useState<number | null>(null)
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
 
   const fetchBookById = async () => {
     try {
@@ -37,22 +37,16 @@ export default function author({ params }: { params: { id: number } }) {
   }
   useEffect(() => {
     fetchBookById()
-  }, [])
-
-  const [isAlertOpen, setIsAlertOpen] = useState(false)
-  const [currentBookId, setCurrentBookId] = useState(0)
+  }, [bookProv])
 
   const openAlert = () => setIsAlertOpen(true)
   const closeAlert = () => setIsAlertOpen(false)
-
-  const handleDeleteBook = (authorId: number, bookId: number) => {
+  const handleDeleteBook = (bookId: number) => {
     setCurrentBookId(bookId)
-    if (isAlertOpen) {
-      bookProv.deleteBook(currentBookId.toString())
-      closeAlert()
-    } else {
-      openAlert()
-    }
+    openAlert()
+  }
+  const handleConfirmDeleteBook = () => {
+    closeAlert()
   }
 
   useEffect(() => {
@@ -60,6 +54,7 @@ export default function author({ params }: { params: { id: number } }) {
       notFound()
     }
   }, [author])
+
   if (loading) {
     return <div>Loading...</div>
   }
@@ -132,20 +127,20 @@ export default function author({ params }: { params: { id: number } }) {
               <TableCell>{book.rating}</TableCell>
               <TableCell>
                 <Button
-                  onClick={() => handleDeleteBook(author.id, book.id)}
+                  onClick={() => {
+                    handleDeleteBook(book.id)
+                  }}
                   color="none"
                   className="border border-red-600 text-red-600 transition duration-300 hover:bg-red-600 hover:text-white"
                 >
                   Delete
                 </Button>
               </TableCell>
-              <Modal
-                text="Are you sure you want to delete this book?"
+              <DeleteBook
                 isOpen={isAlertOpen}
                 onClose={closeAlert}
-                onConfirm={handleDeleteBook}
-                authorId={author.id}
-                bookId={book.id}
+                onConfirm={handleConfirmDeleteBook}
+                bookId={currentBookId || 0}
               />
             </TableRow>
           ))}
