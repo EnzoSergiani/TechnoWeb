@@ -15,6 +15,7 @@ export interface Book {
   rating: number
   author: Author
   reviews: Review[]
+  coverPhoto?: string
 }
 export interface newBook {
   title: string
