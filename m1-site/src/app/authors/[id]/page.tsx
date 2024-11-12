@@ -11,21 +11,25 @@ import { Heading, Subheading } from '@/components/heading'
 import { Link } from '@/components/link'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
-import { Author } from '@/data'
+import { AuthorProps } from '@/data'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { useBook } from '@/providers/useBookProviders'
 import { CalendarIcon, ChevronLeftIcon } from '@heroicons/react/16/solid'
-import { notFound } from 'next/navigation'
+import { notFound, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-export default function author({ params }: { params: { id: number } }) {
+export default function Author({ params }: { params: { id: number } }) {
+  const router = useRouter()
+
   const authorProv = useAuthor()
   const bookProv = useBook()
 
-  const [author, setAuthor] = useState<Author | null>()
+  const [author, setAuthor] = useState<AuthorProps | null>()
   const [loading, setLoading] = useState(true)
   const [currentBookId, setCurrentBookId] = useState<number | null>(null)
   const [currentAuthorId, setCurrentAuthorId] = useState<number | null>(null)
+  const [isBookAlertOpen, setIsBookAlertOpen] = useState(false)
+  const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
 
   const fetchBookById = async () => {
@@ -41,19 +45,34 @@ export default function author({ params }: { params: { id: number } }) {
     fetchBookById()
   }, [bookProv])
 
-  const openAlert = () => setIsAlertOpen(true)
-  const closeAlert = () => setIsAlertOpen(false)
+  const openBookAlert = () => setIsBookAlertOpen(true)
+  const closeBookAlert = () => setIsBookAlertOpen(false)
+
+  const openAuthorAlert = () => setIsAuthorAlertOpen(true)
+  const closeAuthorAlert = () => setIsAuthorAlertOpen(false)
+
   const handleDeleteBook = (bookId: number) => {
     setCurrentBookId(bookId)
-    openAlert()
+    openBookAlert()
   }
+
   const handleConfirmDeleteBook = () => {
-    closeAlert()
+    closeBookAlert()
   }
 
   const handleDeleteAuthor = (authorId: number) => {
     setCurrentAuthorId(authorId)
-    openAlert()
+    openAuthorAlert()
+  }
+
+  const handleConfirmDeleteAuthor = async () => {
+    try {
+      router.push('/authors')
+    } catch (error) {
+      console.error('Error deleting author:', error)
+    } finally {
+      closeAuthorAlert()
+    }
   }
 
   useEffect(() => {
@@ -151,8 +170,8 @@ export default function author({ params }: { params: { id: number } }) {
                 </Button>
               </TableCell>
               <DeleteBook
-                isOpen={isAlertOpen}
-                onClose={closeAlert}
+                isOpen={isBookAlertOpen}
+                onClose={closeBookAlert}
                 onConfirm={handleConfirmDeleteBook}
                 bookId={currentBookId || 0}
               />
@@ -161,9 +180,9 @@ export default function author({ params }: { params: { id: number } }) {
         </TableBody>
       </Table>
       <DeleteAuthor
-        isOpen={isAlertOpen}
-        onClose={closeAlert}
-        onConfirm={handleConfirmDeleteBook}
+        isOpen={isAuthorAlertOpen}
+        onClose={closeAuthorAlert}
+        onConfirm={handleConfirmDeleteAuthor}
         authorId={author?.id || 0}
       />
     </>

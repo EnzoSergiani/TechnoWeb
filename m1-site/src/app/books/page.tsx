@@ -10,14 +10,14 @@ import { Heading } from '@/components/heading'
 import { Input, InputGroup } from '@/components/input'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
-import { Book } from '@/data'
+import { BookProps } from '@/data'
 import { useBook } from '@/providers/useBookProviders'
 
 import { CurrencyDollarIcon, EllipsisVerticalIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { useEffect, useRef, useState } from 'react'
 export default function Books() {
   const bookProv = useBook()
-  const [books, setBooks] = useState<Book[]>(bookProv.booksProv)
+  const [books, setBooks] = useState<BookProps[]>(bookProv.booksProv)
   const [searchTerm, setSearchTerm] = useState('')
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [openCreateBook, setOpenCreateBook] = useState(false)
@@ -62,7 +62,7 @@ export default function Books() {
 
   const [asc, setAsc] = useState(true)
 
-  function handleSort(key: keyof Book) {
+  function handleSort(key: keyof BookProps) {
     const sortedBooks = [...books].sort((a, b) => {
       if (a[key] < b[key]) return asc ? -1 : 1
       if (a[key] > b[key]) return asc ? 1 : -1

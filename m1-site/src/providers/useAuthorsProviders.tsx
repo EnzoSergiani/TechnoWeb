@@ -40,7 +40,7 @@ export const AuthorProviders = ({ children }: { children: React.ReactNode }) => 
 
   const deleteAuthor = async (id: number) => {
     try {
-      const response = await axiosApi.delete(`/books/${id}`)
+      const response = await axiosApi.delete(`/authors/${id}`)
       console.log('Author deleted:', response.data)
       load()
     } catch (error) {

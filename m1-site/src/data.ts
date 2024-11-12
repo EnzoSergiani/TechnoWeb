@@ -1,23 +1,23 @@
-export interface Author {
+export interface AuthorProps {
   id: number
   name: string
   profilePicture?: string
   numberOfBooks: number
-  books: Book[]
+  books: BookProps[]
   rating: number
 }
 
-export interface Book {
+export interface BookProps {
   id: number
   title: string
   price: number
   publicationYear: number
   rating: number
-  author: Author
-  reviews: Review[]
+  author: AuthorProps
+  reviews: ReviewProps[]
   coverPhoto?: string
 }
-export interface newBook {
+export interface newBookProps {
   title: string
   author: {
     id: number
@@ -25,7 +25,7 @@ export interface newBook {
   price: number
   publicationYear: number
 }
-export interface Review {
+export interface ReviewProps {
   id: number
   rating: number // Between 1 and 5 stars
   comment: string
