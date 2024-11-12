@@ -6,13 +6,16 @@ import { Heading, Subheading } from '@/components/heading'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
 import type { Book } from '@/data'
+import { deleteBookById } from '@/online/book/book'
 import { useBook } from '@/providers/useBookProviders'
 import { ChevronLeftIcon, CurrencyDollarIcon } from '@heroicons/react/16/solid'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { useEffect, useState } from 'react'
+
 export default function Book({ params }: { params: { id: string } }) {
   const bookProv = useBook()
+  //const router = useRouter()
 
   const [book, setBook] = useState<Book | null>()
   const [loading, setLoading] = useState(true)
@@ -55,6 +58,15 @@ export default function Book({ params }: { params: { id: string } }) {
     return <div>Loading...</div>
   }
 
+  const handleDeletion = async () => {
+    try {
+      await deleteBookById(book?.id)
+      window.location.href = '/books'
+    } catch (error) {
+      console.error('Erreur lors de la suppression du livre :', error)
+    }
+  }
+
   return (
     <>
       <div className="max-lg:hidden">
@@ -77,10 +89,22 @@ export default function Book({ params }: { params: { id: string } }) {
             </div>
             <div className="mt-2 text-sm/6 text-zinc-500">{book?.publicationYear}</div>
           </div>
+          {book?.coverPhoto && (
+            <div className="mt-4">
+              <img
+                src={book.coverPhoto}
+                alt={`${book.title} Cover`}
+                style={{ width: '150px', height: '200px', objectFit: 'cover' }}
+                className="rounded shadow-md"
+              />
+            </div>
+          )}
         </div>
         <div className="flex gap-2">
           <Button>Edit</Button>
-          <Button color="red">Delete</Button>
+          <Button color="red" onClick={() => handleDeletion()}>
+            Delete
+          </Button>
         </div>
       </div>
 
