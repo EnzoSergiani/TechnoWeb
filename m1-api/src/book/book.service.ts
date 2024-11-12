@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Author } from 'src/author/author.entity';
+import { AuthorService } from 'src/author/author.service';
 import { Repository } from 'typeorm';
 import { Book } from './book.entity';
 import { CreateBookDto } from './dto/book.dto';
@@ -13,6 +14,8 @@ export class BookService {
 
     @InjectRepository(Author)
     private authorRepository: Repository<Author>,
+
+    private authorService: AuthorService,
   ) {}
 
   async findAll(): Promise<Book[]> {
@@ -41,11 +44,28 @@ export class BookService {
       author: authorEntity,
     });
 
+    await this.authorService.incrementBookCount(author.id);
+
     return this.bookRepository.save(book);
   }
 
   async delete(id: number){
-    return await this.bookRepository.delete(id).then(() => {});
+    //return await this.bookRepository.delete(id).then(() => {});
+
+    const book = await this.bookRepository.findOne({
+      where: { id: id },
+      relations: ['author'],
+    });
+
+    if (!book) {
+      throw new NotFoundException(`Book with ID ${id} not found`);
+    }
+
+    // Supprimez le livre
+    await this.bookRepository.remove(book);
+
+    // Décrémentez le nombre de livres de l'auteur
+    await this.authorService.decrementBookCount(book.author.id);
   }
   
 }
