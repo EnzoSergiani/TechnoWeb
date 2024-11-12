@@ -3,7 +3,7 @@
 import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
-import { CreateBook } from '@/components/createBook'
+import { CreateInput } from '@/components/createInput'
 import { Dialog, DialogBody, DialogTitle } from '@/components/dialog'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown'
 import { Heading } from '@/components/heading'
@@ -79,7 +79,7 @@ export default function Books() {
       <Dialog title="Sort by" className="dialog" open={openCreateBook} onClose={() => setOpenCreateBook(false)}>
         <DialogTitle>Add a new book</DialogTitle>
         <DialogBody>
-          <CreateBook setOpenDialog={setOpenCreateBook} />
+          <CreateInput setOpenDialog={setOpenCreateBook} type="book" />
         </DialogBody>
       </Dialog>
 
