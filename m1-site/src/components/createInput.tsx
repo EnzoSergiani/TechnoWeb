@@ -20,7 +20,6 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('eeeee', e)
 
     if (props.type === 'book') {
       const newBook = {
