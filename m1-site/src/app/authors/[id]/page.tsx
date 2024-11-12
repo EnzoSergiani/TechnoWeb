@@ -3,6 +3,7 @@
 import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
+import { DeleteAuthor } from '@/components/deleteAuthor'
 import { DeleteBook } from '@/components/deleteBook'
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from '@/components/description-list'
 import { Divider } from '@/components/divider'
@@ -24,6 +25,7 @@ export default function author({ params }: { params: { id: number } }) {
   const [author, setAuthor] = useState<Author | null>()
   const [loading, setLoading] = useState(true)
   const [currentBookId, setCurrentBookId] = useState<number | null>(null)
+  const [currentAuthorId, setCurrentAuthorId] = useState<number | null>(null)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
 
   const fetchBookById = async () => {
@@ -47,6 +49,11 @@ export default function author({ params }: { params: { id: number } }) {
   }
   const handleConfirmDeleteBook = () => {
     closeAlert()
+  }
+
+  const handleDeleteAuthor = (authorId: number) => {
+    setCurrentAuthorId(authorId)
+    openAlert()
   }
 
   useEffect(() => {
@@ -84,7 +91,14 @@ export default function author({ params }: { params: { id: number } }) {
           </div>
           <div className="flex gap-2">
             <Button>Edit</Button>
-            <Button color="red">Delete</Button>
+            <Button
+              color="red"
+              onClick={() => {
+                handleDeleteAuthor(author?.id || 0)
+              }}
+            >
+              Delete
+            </Button>
           </div>
         </div>
       </div>
@@ -146,6 +160,12 @@ export default function author({ params }: { params: { id: number } }) {
           ))}
         </TableBody>
       </Table>
+      <DeleteAuthor
+        isOpen={isAlertOpen}
+        onClose={closeAlert}
+        onConfirm={handleConfirmDeleteBook}
+        authorId={author?.id || 0}
+      />
     </>
   )
 }
