@@ -30,7 +30,6 @@ export default function Author({ params }: { params: { id: string } }) {
   const [currentAuthorId, setCurrentAuthorId] = useState<number | null>(null)
   const [isBookAlertOpen, setIsBookAlertOpen] = useState(false)
   const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
-  const [isAlertOpen, setIsAlertOpen] = useState(false)
 
   const fetchBookById = async () => {
     try {
@@ -109,6 +108,7 @@ export default function Author({ params }: { params: { id: string } }) {
             </span>
           </div>
           <div className="flex gap-2">
+            DeleteAuthor
             <Button>Edit</Button>
             <Button
               color="red"
@@ -183,7 +183,7 @@ export default function Author({ params }: { params: { id: string } }) {
         isOpen={isAuthorAlertOpen}
         onClose={closeAuthorAlert}
         onConfirm={handleConfirmDeleteAuthor}
-        authorId={author?.id || 0}
+        authorId={currentAuthorId || 0}
       />
     </>
   )
