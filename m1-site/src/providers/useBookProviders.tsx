@@ -7,7 +7,7 @@ type BookContextType = {
   load: () => Promise<Book[]>
   loadById(id: string): Promise<Book | null>
   createBook: (book: any) => Promise<void>
-  deleteBook: (id: string) => Promise<void>
+  deleteBook: (id: number) => Promise<void>
 }
 
 export const BookContext = createContext<BookContextType | undefined>(undefined)
@@ -47,7 +47,7 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
       console.error('Error creating book:', error)
     }
   }
-  const deleteBook = async (id: string) => {
+  const deleteBook = async (id: number) => {
     try {
       const response = await axiosApi.delete(`/books/${id}`)
       console.log('Book deleted:', response.data)

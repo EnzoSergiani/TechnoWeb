@@ -17,7 +17,7 @@ export const DeleteBook = ({ isOpen, onClose, onConfirm, bookId }: DeleteBookPro
   const handleBookDelete = async () => {
     setError(null)
     try {
-      await bookProv.deleteBook(bookId.toString())
+      await bookProv.deleteBook(bookId)
       onConfirm(bookId)
       onClose()
     } catch (e) {
