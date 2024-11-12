@@ -130,7 +130,7 @@ export default function author({ params }: { params: { id: number } }) {
                   onClick={() => {
                     handleDeleteBook(book.id)
                   }}
-                  color="none"
+                  color="red"
                   className="border border-red-600 text-red-600 transition duration-300 hover:bg-red-600 hover:text-white"
                 >
                   Delete

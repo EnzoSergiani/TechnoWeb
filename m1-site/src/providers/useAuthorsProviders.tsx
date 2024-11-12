@@ -1,10 +1,12 @@
 import { Author } from '@/data'
 import { createContext, useContext, useEffect, useState } from 'react'
+import axiosApi from './axiosApi'
 
 type AuthorContextType = {
   authorsProv: Author[]
   load: () => Promise<Author[]>
   loadById(id: number): Promise<Author | null>
+  createAuthor(authorData: Omit<Author, 'id'>): Promise<Author>
 }
 
 export const AuthorContext = createContext<AuthorContextType | undefined>(undefined)
@@ -34,12 +36,24 @@ export const AuthorProviders = ({ children }: { children: React.ReactNode }) => 
       return null
     }
   }
-  
+  const createAuthor = async (authorData: Omit<Author, 'id'>): Promise<Author> => {
+    try {
+      const response = await axiosApi.post('/authors', authorData)
+      console.log('Author created:', response.data)
+      load()
+      return response.data
+    } catch (error) {
+      console.error('Error creating author:', error)
+      throw error
+    }
+  }
   useEffect(() => {
     load()
   }, [])
 
-  return <AuthorContext.Provider value={{ authorsProv, load, loadById }}>{children}</AuthorContext.Provider>
+  return (
+    <AuthorContext.Provider value={{ authorsProv, load, loadById, createAuthor }}>{children}</AuthorContext.Provider>
+  )
 }
 
 export const useAuthor = () => {
