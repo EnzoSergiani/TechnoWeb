@@ -1,7 +1,7 @@
 import { Author } from '@/data'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { useBook } from '@/providers/useBookProviders'
-import { useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { Button } from './button'
 import { Field, Fieldset, Label } from './fieldset'
 import { Input } from './input'
@@ -13,11 +13,14 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
   const [authorId, setAuthorId] = useState<number>(1)
   const [publicationDate, setPublicationDate] = useState('')
   const [price, setPrice] = useState(-1)
+  const [preview, setPreview] = useState(null)
+  const [coverPhoto, setCoverPhoto] = useState<string | null>(null)
   const authorProv = useAuthor()
   const bookProv = useBook()
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('eeeee', e)
 
     if (props.type === 'book') {
       const newBook = {
@@ -27,7 +30,7 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
         },
         price: price,
         publicationYear: parseInt(publicationDate),
-        coverPhoto: 'default.jpg',
+        coverPhoto: coverPhoto,
       }
       try {
         bookProv.createBook(newBook)
@@ -38,7 +41,7 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
     } else {
       const newAuthor: Omit<Author, 'id'> = {
         name: title,
-        profilePicture: 'default.jpg',
+        profilePicture: 'default.png',
         numberOfBooks: 0,
         books: [],
         rating: 0,
@@ -49,6 +52,18 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
       } catch (e) {
         console.error('Error creating author:', e)
       }
+    }
+  }
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setCoverPhoto(reader.result as string)
+        setPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
     }
   }
 
@@ -105,6 +120,11 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
             </>
           )}
         </Fieldset>
+        <label>
+          Cover Photo:
+          <input type="file" accept="image/*" onChange={handleFileChange} />
+        </label>
+        {preview && <img src={preview} alt="Image preview" style={{ width: 100, height: 100 }} />}
 
         <Button plain onClick={() => props.setOpenDialog(false)} style={{ marginTop: '20px' }}>
           Cancel

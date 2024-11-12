@@ -11,6 +11,7 @@ import { ChevronLeftIcon, CurrencyDollarIcon } from '@heroicons/react/16/solid'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { useEffect, useState } from 'react'
+
 export default function Book({ params }: { params: { id: string } }) {
   const bookProv = useBook()
 
@@ -77,6 +78,16 @@ export default function Book({ params }: { params: { id: string } }) {
             </div>
             <div className="mt-2 text-sm/6 text-zinc-500">{book?.publicationYear}</div>
           </div>
+          {book?.coverPhoto && (
+            <div className="mt-4">
+              <img
+                src={book.coverPhoto}
+                alt={`${book.title} Cover`}
+                style={{ width: '150px', height: '200px', objectFit: 'cover' }}
+                className="rounded shadow-md"
+              />
+            </div>
+          )}
         </div>
         <div className="flex gap-2">
           <Button>Edit</Button>
