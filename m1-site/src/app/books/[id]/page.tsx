@@ -50,6 +50,18 @@ export default function Book({ params }: { params: { id: string } }) {
       closeAlert()
     }
   }
+
+  /*   const handleDeletion = async () => {
+    try {
+      if (book?.id != undefined) {
+        await deleteBookById(book?.id)
+        window.location.href = '/books'
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression du livre :', error)
+    }
+  } */
+
   useEffect(() => {
     fetchBookById()
   }, [])
