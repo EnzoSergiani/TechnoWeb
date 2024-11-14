@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Patch } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/review.dto';
 import { Review } from './review.entity';
+import { UpdateReviewDto } from './dto/updateReview.dto';
 
 @Controller('books/:bookId/reviews')
 export class ReviewController {
@@ -22,4 +23,10 @@ export class ReviewController {
   ): Promise<Review> {
     return await this.reviewService.create(bookId, createReviewDto);
   }
+
+  @Patch(':id')
+  async updateReview(@Param('id') id: number, @Body() updateReviewDto: UpdateReviewDto) {
+    return this.reviewService.updateReview(id, updateReviewDto);
+  }
 }
+

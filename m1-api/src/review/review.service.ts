@@ -5,6 +5,7 @@ import { Review } from './review.entity';
 import { Book } from '../book/book.entity';
 import { CreateReviewDto } from './dto/review.dto';
 import { Author } from 'src/author/author.entity';
+import { UpdateReviewDto } from './dto/updateReview.dto';
 
 @Injectable()
 export class ReviewService {
@@ -103,5 +104,17 @@ export class ReviewService {
     await this.updateBookAverageRating(book.id);
   
     return review;
+  }
+
+  async updateReview(id: number, updateReviewDto: UpdateReviewDto): Promise<Review> {
+    const review = await this.reviewRepository.findOne({ where: { id } });
+
+    if (!review) {
+      throw new NotFoundException(`Review with ID ${id} not found`);
+    }
+
+    Object.assign(review, updateReviewDto);
+
+    return this.reviewRepository.save(review);
   }
 }
