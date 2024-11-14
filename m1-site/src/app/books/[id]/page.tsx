@@ -60,8 +60,10 @@ export default function Book({ params }: { params: { id: string } }) {
 
   const handleDeletion = async () => {
     try {
-      await deleteBookById(book?.id)
-      window.location.href = '/books'
+      if (book?.id != undefined) {
+        await deleteBookById(book?.id)
+        window.location.href = '/books'
+      }
     } catch (error) {
       console.error('Erreur lors de la suppression du livre :', error)
     }
