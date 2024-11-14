@@ -5,6 +5,7 @@ import { AuthorService } from 'src/author/author.service';
 import { Repository } from 'typeorm';
 import { Book } from './book.entity';
 import { CreateBookDto } from './dto/book.dto';
+import { UpdateBookDto } from './dto/updateBook.dto';
 
 @Injectable()
 export class BookService {
@@ -49,8 +50,27 @@ export class BookService {
     return this.bookRepository.save(book);
   }
 
+  async updateBook(id: number, updateBookDto: UpdateBookDto): Promise<Book> {
+    const book = await this.bookRepository.findOne({ where: { id } });
+
+    if (!book) {
+      throw new NotFoundException(`Book with ID ${id} not found`);
+    }
+
+    const previousAuthor : Author = book.author;
+
+    Object.assign(book, updateBookDto);
+
+    if (previousAuthor.id != updateBookDto.author.id){
+      await this.authorService.updateAuthorAverageRating(previousAuthor.id);
+    }
+
+    await this.authorService.updateAuthorAverageRating(updateBookDto.author.id);
+
+    return this.bookRepository.save(book);
+  }
+
   async delete(id: number){
-    //return await this.bookRepository.delete(id).then(() => {});
 
     const book = await this.bookRepository.findOne({
       where: { id: id },
@@ -64,8 +84,30 @@ export class BookService {
     // Supprimez le livre
     await this.bookRepository.remove(book);
 
+    await this.authorService.updateAuthorAverageRating(book.author.id);
+
     // Décrémentez le nombre de livres de l'auteur
     await this.authorService.decrementBookCount(book.author.id);
   }
   
+  async updateBookAverageRating(bookId: number): Promise<void> {
+    const book = await this.bookRepository.findOne({
+      where: { id: bookId },
+      relations: ['reviews'],
+    });
+
+    if (!book) {
+      throw new NotFoundException(`Book with ID ${bookId} not found`);
+    }
+
+    const averageRating = book.reviews.length
+      ? book.reviews.reduce((acc, review) => acc + review.rating, 0) / book.reviews.length
+      : 0;
+
+    book.rating = averageRating;
+    await this.bookRepository.save(book);
+
+    // mise à jour de l'auteur aussi
+    await this.authorService.updateAuthorAverageRating(book.author.id);
+  }
 }
