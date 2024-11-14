@@ -5,6 +5,7 @@ import { AuthorService } from 'src/author/author.service';
 import { Repository } from 'typeorm';
 import { Book } from './book.entity';
 import { CreateBookDto } from './dto/book.dto';
+import { UpdateBookDto } from './dto/updateBook.dto';
 
 @Injectable()
 export class BookService {
@@ -49,8 +50,19 @@ export class BookService {
     return this.bookRepository.save(book);
   }
 
+  async updateBook(id: number, updateBookDto: UpdateBookDto): Promise<Book> {
+    const book = await this.bookRepository.findOne({ where: { id } });
+
+    if (!book) {
+      throw new NotFoundException(`Book with ID ${id} not found`);
+    }
+
+    Object.assign(book, updateBookDto);
+
+    return this.bookRepository.save(book);
+  }
+
   async delete(id: number){
-    //return await this.bookRepository.delete(id).then(() => {});
 
     const book = await this.bookRepository.findOne({
       where: { id: id },

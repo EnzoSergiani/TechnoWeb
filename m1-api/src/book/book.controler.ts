@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/common';
 import { BookService } from './book.service';
 import { Book } from './book.entity';
 import { CreateBookDto } from './dto/book.dto';
+import { UpdateBookDto } from './dto/updateBook.dto';
 
 @Controller('books')
 export class BookController {
@@ -24,6 +25,12 @@ export class BookController {
   async create(@Body() bookData: CreateBookDto): Promise<Book> {
     console.log("Book data:", bookData);
     return await this.bookService.create(bookData);
+  }
+
+  // Route pour update un livre
+  @Patch(':id')
+  async updateBook(@Param('id') id: number, @Body() updateBookDto: UpdateBookDto) {
+    return this.bookService.updateBook(id, updateBookDto);
   }
 
   // Route pour supprimer un livre par son ID
