@@ -80,4 +80,24 @@ export class BookService {
     await this.authorService.decrementBookCount(book.author.id);
   }
   
+  async updateBookAverageRating(bookId: number): Promise<void> {
+    const book = await this.bookRepository.findOne({
+      where: { id: bookId },
+      relations: ['reviews'],
+    });
+
+    if (!book) {
+      throw new NotFoundException(`Book with ID ${bookId} not found`);
+    }
+
+    const averageRating = book.reviews.length
+      ? book.reviews.reduce((acc, review) => acc + review.rating, 0) / book.reviews.length
+      : 0;
+
+    book.rating = averageRating;
+    await this.bookRepository.save(book);
+
+    // mise à jour de l'auteur aussi
+    await this.authorService.updateAuthorAverageRating(book.author.id);
+  }
 }
