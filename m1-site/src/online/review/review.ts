@@ -1,5 +1,5 @@
-import axiosApi from "../axios/axiosApi";
-import { ReviewInterface } from "../../export/interface";
+import { ReviewInterface } from "@/export/interface";
+import axiosApi from "@/online/axios/axiosApi";
 
 export const fetchReviewsByBookId = async (bookId: number, sort?: 'asc' | 'desc'): Promise<ReviewInterface[]> => {
     try {

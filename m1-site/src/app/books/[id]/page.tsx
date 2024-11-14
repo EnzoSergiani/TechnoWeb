@@ -1,0 +1,171 @@
+'use client'
+import { Avatar } from '@/components/avatar'
+import { Badge } from '@/components/badge'
+import { Button } from '@/components/button'
+import { Heading, Subheading } from '@/components/heading'
+import Rating from '@/components/rating'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
+import type { Book } from '@/data'
+import { deleteBookById } from '@/online/book/book'
+import { useBook } from '@/providers/useBookProviders'
+import { ChevronLeftIcon, CurrencyDollarIcon } from '@heroicons/react/16/solid'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { useEffect, useState } from 'react'
+
+export default function Book({ params }: { params: { id: string } }) {
+  const bookProv = useBook()
+  //const router = useRouter()
+
+  const [book, setBook] = useState<Book | null>()
+  const [loading, setLoading] = useState(true)
+
+  const fetchBookById = async () => {
+    try {
+      setBook(await bookProv.loadById(params.id))
+    } catch (error) {
+      console.error('Error loading books:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+  useEffect(() => {
+    fetchBookById()
+  }, [])
+
+  useEffect(() => {
+    if (!book && !loading) {
+      notFound()
+    }
+  }, [book])
+
+  let author = book?.author
+  let review = Number(
+    book?.reviews
+      ?.map((review: { rating: any }) => {
+        return review.rating
+      })
+      .reduce((acc: any, curr: any) => acc + curr, 0) / (book?.reviews?.length ?? 0)
+  )
+
+  if (isNaN(review)) {
+    review = 0
+  }
+
+  const [asc, setAsc] = useState(true)
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
+  const handleDeletion = async () => {
+    try {
+      if (book?.id != undefined) {
+        await deleteBookById(book?.id)
+        window.location.href = '/books'
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression du livre :', error)
+    }
+  }
+
+  return (
+    <>
+      <div className="max-lg:hidden">
+        <Link href="/books" className="inline-flex items-center gap-2 text-sm/6 text-zinc-500 dark:text-zinc-400">
+          <ChevronLeftIcon className="size-4 fill-zinc-400 dark:fill-zinc-500" />
+          Books
+        </Link>
+      </div>
+      <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-6">
+          <div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <Heading>{book?.title}</Heading>
+              <Rating rating={review} />
+              <Badge color={'yellow'} className="flex items-center justify-center">
+                <CurrencyDollarIcon className="size-4" />
+                <span>{book?.price}</span>
+              </Badge>
+              <Badge color="red">N{book?.id}</Badge>
+            </div>
+            <div className="mt-2 text-sm/6 text-zinc-500">{book?.publicationYear}</div>
+          </div>
+          {book?.coverPhoto && (
+            <div className="mt-4">
+              <img
+                src={book.coverPhoto}
+                alt={`${book.title} Cover`}
+                style={{ width: '150px', height: '200px', objectFit: 'cover' }}
+                className="rounded shadow-md"
+              />
+            </div>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <Button>Edit</Button>
+          <Button color="red" onClick={() => handleDeletion()}>
+            Delete
+          </Button>
+        </div>
+      </div>
+
+      <Subheading className="mt-12">Author</Subheading>
+      <Table className="mt-4 [--gutter:theme(spacing.6)] lg:[--gutter:theme(spacing.10)]">
+        <TableHead>
+          <TableRow>
+            <TableHeader>Number</TableHeader>
+            <TableHeader>Name</TableHeader>
+            <TableHeader>Number of books</TableHeader>
+            <TableHeader>Rating</TableHeader>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow key={author?.id} href={`/authors/${author?.id}`} title={`Order #${author?.id}`}>
+            <TableCell>{author?.id}</TableCell>
+            <TableCell>
+              <div className="flex items-center gap-2">
+                <Avatar src={author?.profilePicture} className="size-6" />
+                <span>{author?.name}</span>
+              </div>
+            </TableCell>
+            <TableCell>{author?.numberOfBooks}</TableCell>
+            <TableCell>{author?.rating}</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+
+      <Subheading className="mt-12">Reviews</Subheading>
+      <Table className="mt-4 [--gutter:theme(spacing.6)] lg:[--gutter:theme(spacing.10)]">
+        <TableHead>
+          <TableRow>
+            <TableHeader>Number</TableHeader>
+            <TableHeader>Rating</TableHeader>
+            <TableHeader>Comment</TableHeader>
+            <TableHeader>
+              <button onClick={() => setAsc(!asc)}>
+                Date <span>&uarr;&darr;</span>
+              </button>
+            </TableHeader>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {book?.reviews
+            ?.sort((a, b) =>
+              asc ? a.createdAt.getTime() - b.createdAt.getTime() : b.createdAt.getTime() - a.createdAt.getTime()
+            )
+            .map((review) => (
+              <TableRow key={review?.id} href={`/reviews/${review?.id}`} title={`Review #${review?.id}`}>
+                <TableCell>{review?.id}</TableCell>
+                <TableCell>
+                  <Rating rating={review?.rating} />
+                </TableCell>
+                <TableCell>{review?.comment}</TableCell>
+                <TableCell>{review?.createdAt.toDateString()}</TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
+    </>
+  )
+}

@@ -47,4 +47,12 @@ export class AuthorService {
       throw new NotFoundException(`Author with ID ${id} not found`);
     }
   }
+
+  async incrementBookCount(id: number): Promise<void> {
+    await this.authorRepository.increment({ id: id }, 'numberOfBooks', 1);
+  }
+
+  async decrementBookCount(id: number): Promise<void> {
+    await this.authorRepository.decrement({ id: id }, 'numberOfBooks', 1);
+  }
 }

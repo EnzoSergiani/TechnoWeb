@@ -1,5 +1,5 @@
-import { BookInterface } from "../../export/interface";
-import axiosApi from "../axios/axiosApi";
+import { BookInterface } from "@/export/interface";
+import axiosApi from "@/online/axios/axiosApi";
 
 export const fetchAllBooks = async () => {
     try {

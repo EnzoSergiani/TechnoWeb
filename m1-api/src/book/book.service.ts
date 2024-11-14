@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Author } from 'src/author/author.entity';
+import { AuthorService } from 'src/author/author.service';
 import { Repository } from 'typeorm';
 import { Book } from './book.entity';
 import { CreateBookDto } from './dto/book.dto';
@@ -13,6 +14,8 @@ export class BookService {
 
     @InjectRepository(Author)
     private authorRepository: Repository<Author>,
+
+    private authorService: AuthorService,
   ) {}
 
   async findAll(): Promise<Book[]> {
@@ -24,7 +27,7 @@ export class BookService {
   }
 
   async create(createBookDto: CreateBookDto): Promise<Book> {
-    const { title, price, publicationYear, author } = createBookDto;
+    const { title, price, publicationYear, coverPhoto, author } = createBookDto;
 
     // Recherche de l'auteur dans la base de données
     const authorEntity = await this.authorRepository.findOne({ where: { id: author.id } });
@@ -37,30 +40,32 @@ export class BookService {
       title,
       price,
       publicationYear,
+      coverPhoto,
       author: authorEntity,
     });
 
-    authorEntity.numberOfBooks += 1;
-    await this.authorRepository.save(authorEntity);
+    await this.authorService.incrementBookCount(author.id);
+
     return this.bookRepository.save(book);
   }
 
   async delete(id: number){
-    const bookEntity = await this.bookRepository.findOne({where : {id: id}});
-    const authorEntity = await this.authorRepository.findOne({ where: { id: bookEntity.author.id } });
+    //return await this.bookRepository.delete(id).then(() => {});
 
-    if (!bookEntity) {
+    const book = await this.bookRepository.findOne({
+      where: { id: id },
+      relations: ['author'],
+    });
+
+    if (!book) {
       throw new NotFoundException(`Book with ID ${id} not found`);
     }
 
-    if (!authorEntity) {
-      throw new NotFoundException(`Author with ID ${bookEntity.author.id} not found`);
-    }
+    // Supprimez le livre
+    await this.bookRepository.remove(book);
 
-    authorEntity.numberOfBooks -=1;
-    await this.authorRepository.save(authorEntity);
-    
-    return await this.bookRepository.delete(id).then(() => {});
+    // Décrémentez le nombre de livres de l'auteur
+    await this.authorService.decrementBookCount(book.author.id);
   }
   
 }

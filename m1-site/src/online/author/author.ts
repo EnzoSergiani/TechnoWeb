@@ -1,5 +1,5 @@
-import axiosApi from "../axios/axiosApi";
-import { AuthorInterface } from "../../export/interface";
+import axiosApi from "@/online/axios/axiosApi";
+import { AuthorInterface } from "@/export/interface";
 
 export const fetchAllAuthors = async (): Promise<AuthorInterface[]> => {
     try {
