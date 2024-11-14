@@ -76,6 +76,8 @@ export class BookService {
     // Supprimez le livre
     await this.bookRepository.remove(book);
 
+    await this.authorService.updateAuthorAverageRating(book.author.id);
+
     // Décrémentez le nombre de livres de l'auteur
     await this.authorService.decrementBookCount(book.author.id);
   }
