@@ -1,4 +1,4 @@
-import { Author, BookProps } from '@/data'
+import { AuthorProps, BookProps } from '@/data'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { useBook } from '@/providers/useBookProviders'
 import { ChangeEvent, useEffect, useState } from 'react'
@@ -17,7 +17,7 @@ export const CreateInput = (props: {
   const [authorId, setAuthorId] = useState<number>(1)
   const [publicationDate, setPublicationDate] = useState('')
   const [price, setPrice] = useState(-1)
-  const [preview, setPreview] = useState(null)
+  const [preview, setPreview] = useState<string | null>(null)
   const [coverPhoto, setCoverPhoto] = useState<string | null>(null)
   const authorProv = useAuthor()
   const bookProv = useBook()
@@ -58,9 +58,9 @@ export const CreateInput = (props: {
         console.error('Error creating book:', e)
       }
     } else {
-      const newAuthor: Omit<Author, 'id'> = {
+      const newAuthor: Omit<AuthorProps, 'id'> = {
         name: title,
-        profilePicture: 'default.png',
+        profilePicture: coverPhoto || 'default.jpg',
         numberOfBooks: 0,
         books: [],
         rating: 0,
@@ -90,7 +90,7 @@ export const CreateInput = (props: {
     if (props.bookInformation?.title) {
       setTitle(props.bookInformation.title)
       if (props.bookInformation?.coverPhoto) setPreview(props.bookInformation.coverPhoto as string)
-      if (props.bookInformation?.publicationYear) setPublicationDate(props.bookInformation.publicationYear)
+      if (props.bookInformation?.publicationYear) setPublicationDate(props.bookInformation.publicationYear.toString())
     }
   }, [props.bookInformation?.title])
 

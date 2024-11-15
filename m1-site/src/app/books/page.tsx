@@ -23,9 +23,12 @@ export default function Books() {
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [openCreateBook, setOpenCreateBook] = useState(false)
   const [filteredBooks, setFilteredBooks] = useState<BookProps[]>()
-  const [editModal, setEditModal] = useState<Boolean>(false)
+  const [editModal, setEditModal] = useState<boolean>(false)
   const [currentBookToEdit, setCurrentBookToEdit] = useState<BookProps>()
-  const [deleteModalBook, setDeleteModalBook] = useState<boolean>(false)
+  const [currentBookId, setCurrentBookId] = useState<number | null>(null)
+  const [isBookAlertOpen, setIsBookAlertOpen] = useState(false)
+  const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
+  // const [filteredBooks, setFilteredBooks] = useState<BookProps[]>()
 
   const fetchBooks = async () => {
     try {
@@ -45,7 +48,6 @@ export default function Books() {
   }, [])
 
   useEffect(() => {
-    setFilteredBooks(bookProv.booksProv)
     setBooks(bookProv.booksProv)
   }, [bookProv.booksProv])
 
@@ -73,8 +75,10 @@ export default function Books() {
 
   function handleSort(key: keyof BookProps) {
     const sortedBooks = [...books].sort((a, b) => {
-      if (a[key] < b[key]) return asc ? -1 : 1
-      if (a[key] > b[key]) return asc ? 1 : -1
+      if (a[key] !== undefined && b[key] !== undefined) {
+        if (a[key] < b[key]) return asc ? -1 : 1
+        if (a[key] > b[key]) return asc ? 1 : -1
+      }
       return 0
     })
     setBooks(sortedBooks)
@@ -84,6 +88,17 @@ export default function Books() {
     setOpenCreateBook(true)
   }
 
+  const openBookAlert = () => setIsBookAlertOpen(true)
+  const closeBookAlert = () => setIsBookAlertOpen(false)
+
+  const handleDeleteBook = (bookId: number) => {
+    setCurrentBookId(bookId)
+    openBookAlert()
+  }
+
+  const handleConfirmDeleteBook = () => {
+    closeBookAlert()
+  }
   useEffect(() => {
     console.log('filtered 1111', filteredBooks)
   }, [filteredBooks])
@@ -166,59 +181,56 @@ export default function Books() {
             const review =
               book.reviews?.reduce((acc, review) => acc + review.rating, 0) / (book.reviews?.length || 1) || 0
             return (
-              <>
+              <TableRow key={book.id} href={`books/${book.id}`} title={`Order #${book.id}`}>
+                <TableCell>{book.id}</TableCell>
+                <TableCell>{book.title}</TableCell>
+                <TableCell>
+                  <Badge color={'yellow'} className="flex items-center justify-center">
+                    <CurrencyDollarIcon className="size-4" />
+                    <span>{book.price}</span>
+                  </Badge>
+                </TableCell>
+                <TableCell>{book.publicationYear}</TableCell>
+                <TableCell>
+                  <Rating rating={book.rating} />
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Avatar src={book.author.profilePicture} className="size-6" />
+                    <span>{book.author.name}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Dropdown>
+                    <DropdownButton plain aria-label="More options">
+                      <EllipsisVerticalIcon />
+                    </DropdownButton>
+                    <DropdownMenu anchor="bottom end">
+                      <DropdownItem
+                        onClick={() => {
+                          setCurrentBookToEdit(book)
+                          setEditModal(true)
+                        }}
+                      >
+                        Edit
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => {
+                          handleDeleteBook(book.id)
+                        }}
+                      >
+                        Delete
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                </TableCell>
                 <DeleteBook
-                  isOpen={deleteModalBook}
-                  onClose={() => setDeleteModalBook(false)}
-                  onConfirm={() => setDeleteModalBook(false)}
-                  bookId={book.id}
+                  isOpen={isBookAlertOpen}
+                  onClose={closeBookAlert}
+                  onConfirm={handleConfirmDeleteBook}
+                  bookId={currentBookId || 0}
                 />
-                <TableRow key={book.id} href={`books/${book.id}`} title={`Order #${book.id}`}>
-                  <TableCell>{book.id}</TableCell>
-                  <TableCell>{book.title}</TableCell>
-                  <TableCell>
-                    <Badge color={'yellow'} className="flex items-center justify-center">
-                      <CurrencyDollarIcon className="size-4" />
-                      <span>{book.price}</span>
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{book.publicationYear}</TableCell>
-                  <TableCell>
-                    <Rating rating={review} />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Avatar src={book.author.profilePicture} className="size-6" />
-                      <span>{book.author.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Dropdown>
-                      <DropdownButton plain aria-label="More options">
-                        <EllipsisVerticalIcon />
-                      </DropdownButton>
-                      <DropdownMenu anchor="bottom end">
-                        <DropdownItem
-                          onClick={() => {
-                            setCurrentBookToEdit(book)
-                            setEditModal(true)
-                          }}
-                        >
-                          Edit
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => {
-                            console.log('current book', book.id)
-                            setDeleteModalBook(true)
-                          }}
-                        >
-                          Delete
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                  </TableCell>
-                </TableRow>
-              </>
+              </TableRow>
             )
           })}
         </TableBody>

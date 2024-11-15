@@ -3,6 +3,7 @@
 import { Avatar } from '@/components/avatar'
 import { Button } from '@/components/button'
 import { CreateInput } from '@/components/createInput'
+import { DeleteAuthor } from '@/components/deleteAuthor'
 import { Dialog, DialogBody } from '@/components/dialog'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown'
 import { Heading } from '@/components/heading'
@@ -20,7 +21,9 @@ export default function Authors() {
   const authorsProv = useAuthor()
   const [authors, setAuthors] = useState<AuthorProps[]>([])
   const [openCreateAuthor, setOpenCreateAuthor] = useState(false)
-  const [searchTerm, setSearchTerm] = useState()
+  const [currentAuthorId, setCurrentAuthorId] = useState<number | null>(null)
+  const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState<string>('')
   const [filteredAuthors, setFilteredAuthors] = useState<AuthorProps[]>([])
 
   const fetchAuthors = async () => {
@@ -42,8 +45,19 @@ export default function Authors() {
     fetchAuthors()
   }, [])
 
+  const openAuthorAlert = () => setIsAuthorAlertOpen(true)
+  const closeAuthorAlert = () => setIsAuthorAlertOpen(false)
+
+  const handleDeleteAuthor = (authorId: number) => {
+    setCurrentAuthorId(authorId)
+    openAuthorAlert()
+  }
+
+  const handleConfirmDeleteAuthor = async () => {
+    closeAuthorAlert()
+  }
   const handleSearch = () => {
-    setFilteredAuthors(authors.filter((author) => author.name.toLowerCase().includes(searchTerm.toLowerCase())))
+    setFilteredAuthors(authors.filter((author) => author.name.toLowerCase().includes((searchTerm || '').toLowerCase())))
   }
 
   useEffect(() => {
@@ -100,7 +114,7 @@ export default function Authors() {
                   <span>{author.name}</span>
                 </div>
               </TableCell>
-              <TableCell>{author.rating || 0}</TableCell>
+              <TableCell>{author.numberOfBooks}</TableCell>
               <TableCell>
                 <Rating rating={author.rating || 0} />
               </TableCell>
@@ -111,7 +125,13 @@ export default function Authors() {
                   </DropdownButton>
                   <DropdownMenu anchor="bottom end">
                     <DropdownItem>Edit</DropdownItem>
-                    <DropdownItem>Delete</DropdownItem>
+                    <DropdownItem
+                      onClick={() => {
+                        handleDeleteAuthor(author?.id || 0)
+                      }}
+                    >
+                      Delete
+                    </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </TableCell>
@@ -119,6 +139,12 @@ export default function Authors() {
           ))}
         </TableBody>
       </Table>
+      <DeleteAuthor
+        isOpen={isAuthorAlertOpen}
+        onClose={closeAuthorAlert}
+        onConfirm={handleConfirmDeleteAuthor}
+        authorId={currentAuthorId || 0}
+      />
     </>
   )
 }
