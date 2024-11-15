@@ -15,13 +15,13 @@ export const CreateInput = (props: {
 }) => {
   // Add props parameter
   const [title, setTitle] = useState('')
-  const [authorId, setAuthorId] = useState<number>(1)
   const [publicationDate, setPublicationDate] = useState('')
   const [price, setPrice] = useState(-1)
   const [preview, setPreview] = useState<string | null>(null)
   const [coverPhoto, setCoverPhoto] = useState<string | null>(null)
   const authorProv = useAuthor()
   const bookProv = useBook()
+  const [authorId, setAuthorId] = useState<number>(authorProv.authorsProv[0].id)
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -131,7 +131,12 @@ export const CreateInput = (props: {
                 <>
                   <Field>
                     <Label>Author</Label>
-                    <Listbox name="status" defaultValue={1} value={authorId} onChange={(e) => setAuthorId(e || 1)}>
+                    <Listbox
+                      name="status"
+                      defaultValue={authorId}
+                      value={authorId}
+                      onChange={(e) => setAuthorId(e || 1)}
+                    >
                       {authorProv.authorsProv.map((author) => (
                         <ListboxOption key={author.id} value={author.id}>
                           <ListboxLabel>{author.name}</ListboxLabel>
