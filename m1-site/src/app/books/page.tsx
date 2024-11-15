@@ -25,17 +25,19 @@ export default function Books() {
   const [currentBookId, setCurrentBookId] = useState<number | null>(null)
   const [isBookAlertOpen, setIsBookAlertOpen] = useState(false)
   const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
+  const [filteredBooks, setFilteredBooks] = useState<Book[]>()
 
   const fetchBooks = async () => {
     try {
       setBooks(await bookProv.load())
+      setFilteredBooks(await bookProv.load())
     } catch (error) {
       console.error('Error loading books:', error)
     }
   }
   async function getBooks(searchTerm: string = '') {
-    const booksToFilter = await bookProv.load()
-    return booksToFilter.filter((book) => book.title.toLowerCase().includes(searchTerm.toLowerCase()))
+    //const booksToFilter = await bookProv.load()
+    setFilteredBooks(books.filter((book) => book.title.toLowerCase().includes(searchTerm.toLowerCase())))
   }
 
   useEffect(() => {
@@ -51,11 +53,13 @@ export default function Books() {
       clearTimeout(timeoutId.current)
     }
 
-    timeoutId.current = setTimeout(async () => {
-      // Perform search
-      const booksSearch = await getBooks(searchTerm)
-      setBooks(booksSearch)
-    }, 1000)
+    // timeoutId.current = setTimeout(async () => {
+    //   // Perform search
+    //   const booksSearch = await getBooks(searchTerm)
+    //   setFilteredBooks(booksSearch)
+    // }, 1000)
+
+    getBooks(searchTerm)
 
     return () => {
       if (timeoutId.current !== null) {
@@ -92,6 +96,9 @@ export default function Books() {
   const handleConfirmDeleteBook = () => {
     closeBookAlert()
   }
+  useEffect(() => {
+    console.log('filtered 1111', filteredBooks)
+  }, [filteredBooks])
 
   return (
     <>
@@ -116,7 +123,9 @@ export default function Books() {
               name="search"
               placeholder="Search books&hellip;"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+              }}
             />
           </InputGroup>
         </div>
@@ -158,7 +167,9 @@ export default function Books() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {books.map((book) => {
+          {filteredBooks?.map((book) => {
+            console.log('books', books)
+            console.log('filtered', filteredBooks)
             const review =
               book.reviews?.reduce((acc, review) => acc + review.rating, 0) / (book.reviews?.length || 1) || 0
             return (

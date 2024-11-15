@@ -7,12 +7,14 @@ import { DeleteAuthor } from '@/components/deleteAuthor'
 import { Dialog, DialogBody } from '@/components/dialog'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown'
 import { Heading } from '@/components/heading'
+import { Input, InputGroup } from '@/components/input'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
 import { AuthorProps } from '@/data'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { DialogTitle } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/16/solid'
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { useEffect, useState } from 'react'
 
 export default function Authors() {
@@ -21,9 +23,12 @@ export default function Authors() {
   const [openCreateAuthor, setOpenCreateAuthor] = useState(false)
   const [currentAuthorId, setCurrentAuthorId] = useState<number | null>(null)
   const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState()
+  const [filteredAuthors, setFilteredAuthors] = useState<AuthorProps[]>([])
 
   const fetchAuthors = async () => {
     try {
+      setFilteredAuthors(await authorsProv.load())
       setAuthors(await authorsProv.load())
     } catch (error) {
       console.error('Error loading books:', error)
@@ -51,6 +56,13 @@ export default function Authors() {
   const handleConfirmDeleteAuthor = async () => {
     closeAuthorAlert()
   }
+  const handleSearch = () => {
+    setFilteredAuthors(authors.filter((author) => author.name.toLowerCase().includes(searchTerm.toLowerCase())))
+  }
+
+  useEffect(() => {
+    handleSearch()
+  }, [searchTerm])
 
   return (
     <>
@@ -61,11 +73,26 @@ export default function Authors() {
         </DialogBody>
       </Dialog>
 
-      <div className="flex items-end justify-between gap-4">
-        <Heading>Authors</Heading>
-        <Button className="-my-0.5" onClick={handleCreateAuthor}>
-          Create author
-        </Button>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-end justify-between gap-4">
+          <Heading>Authors</Heading>
+          <Button className="-my-0.5" onClick={handleCreateAuthor}>
+            Create author
+          </Button>
+        </div>
+        <div className="flex-1">
+          <InputGroup>
+            <MagnifyingGlassIcon />
+            <Input
+              name="search"
+              placeholder="Search authors&hellip;"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+              }}
+            />
+          </InputGroup>
+        </div>
       </div>
       <Table className="mt-8 [--gutter:theme(spacing.6)] lg:[--gutter:theme(spacing.10)]">
         <TableHead>
@@ -78,7 +105,7 @@ export default function Authors() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {authors.map((author) => (
+          {filteredAuthors.map((author) => (
             <TableRow key={author.id} href={`authors/${author.id}`} title={`Order #${author.id}`}>
               <TableCell>{author.id}</TableCell>
               <TableCell>
