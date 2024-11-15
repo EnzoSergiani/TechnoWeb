@@ -45,6 +45,7 @@ export default function Books() {
   }, [])
 
   useEffect(() => {
+    setFilteredBooks(bookProv.booksProv)
     setBooks(bookProv.booksProv)
   }, [bookProv.booksProv])
 

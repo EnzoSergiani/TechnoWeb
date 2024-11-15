@@ -30,7 +30,6 @@ export class BookController {
   // Route pour update un livre
   @Put(':id')
   async updateBook(@Param('id') id: number, @Body() updateBookDto: UpdateBookDto) {
-    console.log("ça part")
     return this.bookService.updateBook(id, updateBookDto);
   }
 
