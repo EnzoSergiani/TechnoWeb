@@ -25,6 +25,7 @@ export default function Books() {
   const [currentBookId, setCurrentBookId] = useState<number | null>(null)
   const [isBookAlertOpen, setIsBookAlertOpen] = useState(false)
   const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
+  const [openEditBook, setOpenEditBook] = useState(false)
 
   const fetchBooks = async () => {
     try {
@@ -98,7 +99,7 @@ export default function Books() {
       <Dialog title="Sort by" className="dialog" open={openCreateBook} onClose={() => setOpenCreateBook(false)}>
         <DialogTitle>Add a new book</DialogTitle>
         <DialogBody>
-          <CreateInput setOpenDialog={setOpenCreateBook} type="book" />
+          <CreateInput setOpenDialog={setOpenCreateBook} type="author" />
         </DialogBody>
       </Dialog>
 
@@ -187,7 +188,14 @@ export default function Books() {
                       <EllipsisVerticalIcon />
                     </DropdownButton>
                     <DropdownMenu anchor="bottom end">
-                      <DropdownItem>Edit</DropdownItem>
+                      <DropdownItem
+                        onClick={() => {
+                          setCurrentBookId(book.id || 0)
+                          setOpenEditBook(true)
+                        }}
+                      >
+                        Edit
+                      </DropdownItem>
                       <DropdownItem
                         onClick={() => {
                           handleDeleteBook(book.id)
@@ -209,6 +217,12 @@ export default function Books() {
           })}
         </TableBody>
       </Table>
+      <Dialog title="Sort by" className="dialog" open={openEditBook} onClose={() => setOpenEditBook(false)}>
+        <DialogTitle>Edit a book</DialogTitle>
+        <DialogBody>
+          <CreateInput setOpenDialog={setOpenEditBook} type="editBook" />
+        </DialogBody>
+      </Dialog>
     </>
   )
 }

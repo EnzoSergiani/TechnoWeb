@@ -54,10 +54,11 @@ export const CreateInput = (props: {
       } catch (e) {
         console.error('Error creating author:', e)
       }
-    }
-    else if (props.type === 'editBook') {
+    } else if (props.type === 'editBook') {
       const newBook = {
-        title: title,}
+        title: title,
+      }
+    }
   }
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -143,7 +144,7 @@ export const CreateInput = (props: {
           Cancel
         </Button>
         <Button type="submit" style={{ marginTop: '20px' }}>
-          Create
+          {props.type === 'editBook' || props.type === 'editAuthor' ? 'Edit' : 'Create'}
         </Button>
       </div>
     </form>
