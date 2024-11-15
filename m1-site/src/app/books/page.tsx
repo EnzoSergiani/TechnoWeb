@@ -184,7 +184,7 @@ export default function Books() {
                 </TableCell>
                 <TableCell>{book.publicationYear}</TableCell>
                 <TableCell>
-                  <Rating rating={review} />
+                  <Rating rating={book.rating} />
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">

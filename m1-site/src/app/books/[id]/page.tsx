@@ -57,6 +57,8 @@ export default function Book({ params }: { params: { id: string } }) {
     if (book) {
       await bookProv.rateBook(book.id, newRating)
       setRating(newRating)
+      const updatedBook = await bookProv.loadById(book.id)
+      setBook(updatedBook)
     }
   }
 
@@ -102,7 +104,7 @@ export default function Book({ params }: { params: { id: string } }) {
           <div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <Heading>{book?.title}</Heading>
-              <Rating rating={review} />
+              <Rating rating={book?.rating} />
               <Badge color={'yellow'} className="flex items-center justify-center">
                 <CurrencyDollarIcon className="size-4" />
                 <span>{book?.price}</span>
@@ -158,7 +160,7 @@ export default function Book({ params }: { params: { id: string } }) {
               </div>
             </TableCell>
             <TableCell>{author?.numberOfBooks}</TableCell>
-            <TableCell>{author?.rating}</TableCell>
+            <TableCell>{author?.rating.toPrecision(2)}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -186,7 +188,7 @@ export default function Book({ params }: { params: { id: string } }) {
               <TableRow key={review?.id} href={`/reviews/${review?.id}`} title={`Review #${review?.id}`}>
                 <TableCell>{review?.id}</TableCell>
                 <TableCell>
-                  <Rating rating={review?.rating} />
+                  <Rating rating={review?.rating.toPrecision(2)} />
                 </TableCell>
                 <TableCell>{review?.comment}</TableCell>
                 <TableCell>{review?.createdAt.toDateString()}</TableCell>

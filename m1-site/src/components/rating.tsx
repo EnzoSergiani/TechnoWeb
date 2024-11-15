@@ -8,9 +8,9 @@ interface RatingProps {
 
 const Rating: React.FC<RatingProps> = ({ rating }) => {
   return (
-    <Badge color={rating > 2.5 ? 'lime' : 'red'} className="flex items-center justify-center">
+    <Badge color={rating > 3 ? 'lime' : 'red'} className="flex items-center justify-center">
       <StarIcon className="size-4" />
-      <span>{rating}</span>
+      <span>{(rating ?? 0).toPrecision(2)}</span>
     </Badge>
   )
 }
