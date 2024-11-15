@@ -2,6 +2,7 @@
 import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
+import CommentDrawer from '@/components/commentDrawer'
 import { DeleteBook } from '@/components/deleteBook'
 import { Heading, Subheading } from '@/components/heading'
 import Rating from '@/components/rating'
@@ -24,6 +25,7 @@ export default function Book({ params }: { params: { id: string } }) {
   const [currentBookId, setCurrentBookId] = useState<number | null>(null)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [rating, setRating] = useState<number>(0)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const fetchBookById = async () => {
     try {
@@ -57,6 +59,8 @@ export default function Book({ params }: { params: { id: string } }) {
     if (book) {
       await bookProv.rateBook(book.id, newRating)
       setRating(newRating)
+      const updatedBook = await bookProv.loadById(book.id.toString())
+      setBook(updatedBook)
     }
   }
 
@@ -85,12 +89,21 @@ export default function Book({ params }: { params: { id: string } }) {
 
   const [asc, setAsc] = useState(true)
 
+  const toggleDrawer = (open: boolean) => {
+    setDrawerOpen(open)
+  }
+
+  const handleCloseComment = () => {
+    setDrawerOpen(false)
+  }
+
   if (loading) {
     return <div>Loading...</div>
   }
 
   return (
     <>
+      <CommentDrawer isOpen={drawerOpen} onClose={handleCloseComment} />
       <div className="max-lg:hidden">
         <Link href="/books" className="inline-flex items-center gap-2 text-sm/6 text-zinc-500 dark:text-zinc-400">
           <ChevronLeftIcon className="size-4 fill-zinc-400 dark:fill-zinc-500" />
@@ -102,7 +115,7 @@ export default function Book({ params }: { params: { id: string } }) {
           <div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <Heading>{book?.title}</Heading>
-              <Rating rating={review} />
+              <Rating rating={book?.rating ?? 0} />
               <Badge color={'yellow'} className="flex items-center justify-center">
                 <CurrencyDollarIcon className="size-4" />
                 <span>{book?.price}</span>
@@ -123,6 +136,13 @@ export default function Book({ params }: { params: { id: string } }) {
           )}
         </div>
         <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              toggleDrawer(true)
+            }}
+          >
+            Comment
+          </Button>
           <Button>Edit</Button>
           <Button
             color="red"
@@ -158,7 +178,7 @@ export default function Book({ params }: { params: { id: string } }) {
               </div>
             </TableCell>
             <TableCell>{author?.numberOfBooks}</TableCell>
-            <TableCell>{author?.rating}</TableCell>
+            <TableCell>{author?.rating.toPrecision(2)}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -186,7 +206,7 @@ export default function Book({ params }: { params: { id: string } }) {
               <TableRow key={review?.id} href={`/reviews/${review?.id}`} title={`Review #${review?.id}`}>
                 <TableCell>{review?.id}</TableCell>
                 <TableCell>
-                  <Rating rating={review?.rating} />
+                  <Rating rating={Number(review?.rating.toPrecision(2))} />
                 </TableCell>
                 <TableCell>{review?.comment}</TableCell>
                 <TableCell>{review?.createdAt.toDateString()}</TableCell>

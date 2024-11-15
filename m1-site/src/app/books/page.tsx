@@ -4,6 +4,7 @@ import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
 import { CreateInput } from '@/components/createInput'
+import { DeleteBook } from '@/components/deleteBook'
 import { Dialog, DialogBody, DialogTitle } from '@/components/dialog'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown'
 import { Heading } from '@/components/heading'
@@ -22,8 +23,12 @@ export default function Books() {
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [openCreateBook, setOpenCreateBook] = useState(false)
   const [filteredBooks, setFilteredBooks] = useState<BookProps[]>()
-  const [editModal, setEditModal] = useState<Boolean>(false)
+  const [editModal, setEditModal] = useState<boolean>(false)
   const [currentBookToEdit, setCurrentBookToEdit] = useState<BookProps>()
+  const [currentBookId, setCurrentBookId] = useState<number | null>(null)
+  const [isBookAlertOpen, setIsBookAlertOpen] = useState(false)
+  const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
+  // const [filteredBooks, setFilteredBooks] = useState<BookProps[]>()
 
   const fetchBooks = async () => {
     try {
@@ -70,8 +75,10 @@ export default function Books() {
 
   function handleSort(key: keyof BookProps) {
     const sortedBooks = [...books].sort((a, b) => {
-      if (a[key] < b[key]) return asc ? -1 : 1
-      if (a[key] > b[key]) return asc ? 1 : -1
+      if (a[key] !== undefined && b[key] !== undefined) {
+        if (a[key] < b[key]) return asc ? -1 : 1
+        if (a[key] > b[key]) return asc ? 1 : -1
+      }
       return 0
     })
     setBooks(sortedBooks)
@@ -81,6 +88,17 @@ export default function Books() {
     setOpenCreateBook(true)
   }
 
+  const openBookAlert = () => setIsBookAlertOpen(true)
+  const closeBookAlert = () => setIsBookAlertOpen(false)
+
+  const handleDeleteBook = (bookId: number) => {
+    setCurrentBookId(bookId)
+    openBookAlert()
+  }
+
+  const handleConfirmDeleteBook = () => {
+    closeBookAlert()
+  }
   useEffect(() => {
     console.log('filtered 1111', filteredBooks)
   }, [filteredBooks])
@@ -174,7 +192,7 @@ export default function Books() {
                 </TableCell>
                 <TableCell>{book.publicationYear}</TableCell>
                 <TableCell>
-                  <Rating rating={review} />
+                  <Rating rating={book.rating} />
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
@@ -196,10 +214,22 @@ export default function Books() {
                       >
                         Edit
                       </DropdownItem>
-                      <DropdownItem>Delete</DropdownItem>
+                      <DropdownItem
+                        onClick={() => {
+                          handleDeleteBook(book.id)
+                        }}
+                      >
+                        Delete
+                      </DropdownItem>
                     </DropdownMenu>
                   </Dropdown>
                 </TableCell>
+                <DeleteBook
+                  isOpen={isBookAlertOpen}
+                  onClose={closeBookAlert}
+                  onConfirm={handleConfirmDeleteBook}
+                  bookId={currentBookId || 0}
+                />
               </TableRow>
             )
           })}
