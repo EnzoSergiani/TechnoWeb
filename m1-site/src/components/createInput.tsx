@@ -1,4 +1,3 @@
-import { AuthorInterface, BookInterface } from '@/export/interface'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { useBook } from '@/providers/useBookProviders'
 import { ChangeEvent, useEffect, useState } from 'react'
@@ -10,7 +9,8 @@ import { Listbox, ListboxLabel, ListboxOption } from './listbox'
 export const CreateInput = (props: {
   setOpenDialog: (open: boolean) => void
   type: 'author' | 'book'
-  bookInformation?: BookInterface | undefined
+  bookInformation?: BookProps | undefined
+  authorInformation?: AuthorProps | undefined
 }) => {
   // Add props parameter
   const [title, setTitle] = useState('')
@@ -58,7 +58,15 @@ export const CreateInput = (props: {
         console.error('Error creating book:', e)
       }
     } else {
-      const newAuthor: Omit<AuthorInterface, 'id'> = {
+      if (props.authorInformation) {
+        const updatedAuthor = {
+          id: props.authorInformation.id,
+          name: title ? title : props.authorInformation.name,
+          profilePicture: coverPhoto ? coverPhoto : props.authorInformation.profilePicture,
+        }
+        return
+      }
+      const newAuthor: Omit<AuthorProps, 'id'> = {
         name: title,
         profilePicture: coverPhoto || 'default.jpg',
         numberOfBooks: 0,
@@ -93,6 +101,13 @@ export const CreateInput = (props: {
       if (props.bookInformation?.publicationYear) setPublicationDate(props.bookInformation.publicationYear.toString())
     }
   }, [props.bookInformation?.title])
+
+  useEffect(() => {
+    if (props.authorInformation?.name) {
+      setTitle(props.authorInformation.name)
+      if (props.authorInformation.profilePicture) setPreview(props.authorInformation.profilePicture as string)
+    }
+  }, [props.authorInformation?.name])
 
   return (
     <form onSubmit={handleFormSubmit}>
@@ -156,9 +171,14 @@ export const CreateInput = (props: {
             </>
           )}
         </Fieldset>
-        {/* <div className="mb-4"></div> */}
-
-        {/* </div> */}
+        <label>
+          {props.bookInformation?.coverPhoto
+            ? 'Current Cover Photo:'
+            : props.authorInformation?.profilePicture
+              ? 'Current profile picture'
+              : 'Cover Photo:'}
+          <input type="file" accept="image/*" onChange={handleFileChange} />
+        </label>
         {preview && <img src={preview} alt="Image preview" style={{ width: 100, height: 100 }} />}
 
         <Button plain onClick={() => props.setOpenDialog(false)} style={{ marginTop: '20px' }}>
