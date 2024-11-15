@@ -27,22 +27,24 @@ export const DeleteBook = ({ isOpen, onClose, onConfirm, bookId }: DeleteBookPro
   }
 
   return (
-    <Alert size="md" onClose={onClose} open={isOpen}>
-      <div>
-        Are you sure you want to delete this book?
-        {error && <div className="mt-2 text-red-600">{error}</div>}
-      </div>
-      <div className="mt-4 flex justify-end gap-2">
-        <Button onClick={onClose}>Cancel</Button>
-        <Button
-          color="red"
-          onClick={() => {
-            handleBookDelete()
-          }}
-        >
-          Confirm
-        </Button>
-      </div>
-    </Alert>
+    <td>
+      <Alert size="md" onClose={onClose} open={isOpen}>
+        <div>
+          Are you sure you want to delete this book?
+          {error && <div className="mt-2 text-red-600">{error}</div>}
+        </div>
+        <div className="mt-4 flex justify-end gap-2">
+          <Button onClick={onClose}>Cancel</Button>
+          <Button
+            color="red"
+            onClick={() => {
+              handleBookDelete()
+            }}
+          >
+            Confirm
+          </Button>
+        </div>
+      </Alert>
+    </td>
   )
 }

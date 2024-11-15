@@ -100,9 +100,6 @@ export default function Books() {
   const handleConfirmDeleteBook = () => {
     closeBookAlert()
   }
-  useEffect(() => {
-    console.log('filtered 1111', filteredBooks)
-  }, [filteredBooks])
 
   return (
     <>

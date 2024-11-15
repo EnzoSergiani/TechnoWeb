@@ -1,3 +1,4 @@
+import { AuthorInterface, BookInterface } from '@/export/interface'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { useBook } from '@/providers/useBookProviders'
 import { ChangeEvent, useEffect, useState } from 'react'
@@ -9,8 +10,8 @@ import { Listbox, ListboxLabel, ListboxOption } from './listbox'
 export const CreateInput = (props: {
   setOpenDialog: (open: boolean) => void
   type: 'author' | 'book'
-  bookInformation?: BookProps | undefined
-  authorInformation?: AuthorProps | undefined
+  bookInformation?: BookInterface | undefined
+  authorInformation?: AuthorInterface | undefined
 }) => {
   // Add props parameter
   const [title, setTitle] = useState('')
@@ -66,7 +67,7 @@ export const CreateInput = (props: {
         }
         return
       }
-      const newAuthor: Omit<AuthorProps, 'id'> = {
+      const newAuthor: Omit<AuthorInterface, 'id'> = {
         name: title,
         profilePicture: coverPhoto || 'default.jpg',
         numberOfBooks: 0,
@@ -164,10 +165,10 @@ export const CreateInput = (props: {
                   required
                 />
               </Field>
-              <Field>
+              {/* <Field>
                 <Label>{props.bookInformation?.coverPhoto ? 'Current Cover Photo:' : 'Cover Photo:'}</Label>
                 <Input type="file" accept="image/*" onChange={handleFileChange} required />
-              </Field>
+              </Field> */}
             </>
           )}
         </Fieldset>
@@ -177,7 +178,7 @@ export const CreateInput = (props: {
             : props.authorInformation?.profilePicture
               ? 'Current profile picture'
               : 'Cover Photo:'}
-          <input type="file" accept="image/*" onChange={handleFileChange} />
+          <input type="file" accept="image/*" onChange={handleFileChange} required />
         </label>
         {preview && <img src={preview} alt="Image preview" style={{ width: 100, height: 100 }} />}
 
