@@ -28,7 +28,7 @@ export class Book {
     description: string;
 
     // Un livre n'a qu'un auteur
-    @ManyToOne(() => Author, (author) => author.books, { eager: true })
+    @ManyToOne(() => Author, (author) => author.books, { eager: true, onDelete: 'CASCADE' })
     author: Author;
 
     // Un livre est relié à plusieur avis
