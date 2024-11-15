@@ -25,7 +25,8 @@ const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, id }) =>
     if (!id) return
     try {
       const book = await bookProv.loadById(id.toString())
-      // setComments(book.comments)
+      const reviews = book?.reviews || []
+      setComments(reviews.map((review) => review.comment || ''))
     } catch (error) {
       console.error('Error loading comments:', error)
     }
@@ -34,7 +35,6 @@ const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, id }) =>
   const handleSendComment = () => {
     if (!id) return
     setComments([...comments, comment])
-    bookProv.commentBook(id, comment)
     setComment('')
   }
 
