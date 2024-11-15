@@ -7,7 +7,10 @@ import { Field, Fieldset, Label } from './fieldset'
 import { Input } from './input'
 import { Listbox, ListboxLabel, ListboxOption } from './listbox'
 
-export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; type: 'author' | 'book' }) => {
+export const CreateInput = (props: {
+  setOpenDialog: (open: boolean) => void
+  type: 'author' | 'book' | 'editBook' | 'editAuthor'
+}) => {
   // Add props parameter
   const [title, setTitle] = useState('')
   const [authorId, setAuthorId] = useState<number>(1)
@@ -37,7 +40,7 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
       } catch (e) {
         console.error('Error creating book:', e)
       }
-    } else {
+    } else if (props.type === 'author') {
       const newAuthor: Omit<AuthorProps, 'id'> = {
         name: title,
         profilePicture: coverPhoto || 'default.jpg',
@@ -52,6 +55,9 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
         console.error('Error creating author:', e)
       }
     }
+    else if (props.type === 'editBook') {
+      const newBook = {
+        title: title,}
   }
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -76,9 +82,17 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={props.type === 'book' ? 'Enter book title' : "Enter author's name"}
+              placeholder={
+                props.type === 'book'
+                  ? 'Enter book title'
+                  : props.type === 'author'
+                    ? 'Enter author name'
+                    : props.type === 'editBook'
+                      ? 'Edit book title'
+                      : 'Edit author name'
+              }
               id="title"
-              required
+              required={props.type === 'book' || props.type === 'author'}
             />
           </Field>
           {props.type === 'book' && (
