@@ -4,6 +4,7 @@ import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
 import { CreateInput } from '@/components/createInput'
+import { DeleteBook } from '@/components/deleteBook'
 import { Dialog, DialogBody, DialogTitle } from '@/components/dialog'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown'
 import { Heading } from '@/components/heading'
@@ -24,6 +25,7 @@ export default function Books() {
   const [filteredBooks, setFilteredBooks] = useState<BookProps[]>()
   const [editModal, setEditModal] = useState<Boolean>(false)
   const [currentBookToEdit, setCurrentBookToEdit] = useState<BookProps>()
+  const [deleteModalBook, setDeleteModalBook] = useState<boolean>(false)
 
   const fetchBooks = async () => {
     try {
@@ -163,44 +165,59 @@ export default function Books() {
             const review =
               book.reviews?.reduce((acc, review) => acc + review.rating, 0) / (book.reviews?.length || 1) || 0
             return (
-              <TableRow key={book.id} href={`books/${book.id}`} title={`Order #${book.id}`}>
-                <TableCell>{book.id}</TableCell>
-                <TableCell>{book.title}</TableCell>
-                <TableCell>
-                  <Badge color={'yellow'} className="flex items-center justify-center">
-                    <CurrencyDollarIcon className="size-4" />
-                    <span>{book.price}</span>
-                  </Badge>
-                </TableCell>
-                <TableCell>{book.publicationYear}</TableCell>
-                <TableCell>
-                  <Rating rating={review} />
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Avatar src={book.author.profilePicture} className="size-6" />
-                    <span>{book.author.name}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Dropdown>
-                    <DropdownButton plain aria-label="More options">
-                      <EllipsisVerticalIcon />
-                    </DropdownButton>
-                    <DropdownMenu anchor="bottom end">
-                      <DropdownItem
-                        onClick={() => {
-                          setCurrentBookToEdit(book)
-                          setEditModal(true)
-                        }}
-                      >
-                        Edit
-                      </DropdownItem>
-                      <DropdownItem>Delete</DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </TableCell>
-              </TableRow>
+              <>
+                <DeleteBook
+                  isOpen={deleteModalBook}
+                  onClose={() => setDeleteModalBook(false)}
+                  onConfirm={() => setDeleteModalBook(false)}
+                  bookId={book.id}
+                />
+                <TableRow key={book.id} href={`books/${book.id}`} title={`Order #${book.id}`}>
+                  <TableCell>{book.id}</TableCell>
+                  <TableCell>{book.title}</TableCell>
+                  <TableCell>
+                    <Badge color={'yellow'} className="flex items-center justify-center">
+                      <CurrencyDollarIcon className="size-4" />
+                      <span>{book.price}</span>
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{book.publicationYear}</TableCell>
+                  <TableCell>
+                    <Rating rating={review} />
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Avatar src={book.author.profilePicture} className="size-6" />
+                      <span>{book.author.name}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Dropdown>
+                      <DropdownButton plain aria-label="More options">
+                        <EllipsisVerticalIcon />
+                      </DropdownButton>
+                      <DropdownMenu anchor="bottom end">
+                        <DropdownItem
+                          onClick={() => {
+                            setCurrentBookToEdit(book)
+                            setEditModal(true)
+                          }}
+                        >
+                          Edit
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            console.log('current book', book.id)
+                            setDeleteModalBook(true)
+                          }}
+                        >
+                          Delete
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </TableCell>
+                </TableRow>
+              </>
             )
           })}
         </TableBody>

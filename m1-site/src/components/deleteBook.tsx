@@ -34,7 +34,12 @@ export const DeleteBook = ({ isOpen, onClose, onConfirm, bookId }: DeleteBookPro
       </div>
       <div className="mt-4 flex justify-end gap-2">
         <Button onClick={onClose}>Cancel</Button>
-        <Button color="red" onClick={handleBookDelete}>
+        <Button
+          color="red"
+          onClick={() => {
+            handleBookDelete()
+          }}
+        >
           Confirm
         </Button>
       </div>
