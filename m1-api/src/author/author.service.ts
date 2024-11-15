@@ -75,7 +75,10 @@ export class AuthorService {
       relations: ['reviews'],
     });
 
-    const totalRatings = books.reduce((sum, book) => sum + (book.rating || 0), 0);
+    const totalRatings = books.reduce(
+      (sum, book) => sum + (book.rating || 0),
+      0,
+    );
     const averageRating = books.length ? totalRatings / books.length : 0;
 
     author.rating = averageRating;

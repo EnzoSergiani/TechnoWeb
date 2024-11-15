@@ -31,7 +31,9 @@ export class BookService {
     const { title, price, publicationYear, coverPhoto, author } = createBookDto;
 
     // Recherche de l'auteur dans la base de données
-    const authorEntity = await this.authorRepository.findOne({ where: { id: author.id } });
+    const authorEntity = await this.authorRepository.findOne({
+      where: { id: author.id },
+    });
 
     if (!authorEntity) {
       throw new NotFoundException(`Author with ID ${author.id} not found`);
@@ -62,8 +64,7 @@ export class BookService {
     return this.bookRepository.save(book);
   }
 
-  async delete(id: number){
-
+  async delete(id: number) {
     const book = await this.bookRepository.findOne({
       where: { id: id },
       relations: ['author'],
@@ -81,7 +82,7 @@ export class BookService {
     // Décrémentez le nombre de livres de l'auteur
     await this.authorService.decrementBookCount(book.author.id);
   }
-  
+
   async updateBookAverageRating(bookId: number): Promise<void> {
     const book = await this.bookRepository.findOne({
       where: { id: bookId },
@@ -93,7 +94,8 @@ export class BookService {
     }
 
     const averageRating = book.reviews.length
-      ? book.reviews.reduce((acc, review) => acc + review.rating, 0) / book.reviews.length
+      ? book.reviews.reduce((acc, review) => acc + review.rating, 0) /
+        book.reviews.length
       : 0;
 
     book.rating = averageRating;

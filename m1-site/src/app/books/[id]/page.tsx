@@ -28,8 +28,8 @@ export default function Book({ params }: { params: { id: string } }) {
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [rating, setRating] = useState<number>(0)
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [currentBookToEdit, setCurrentBookToEdit] = useState<BookProps>()
-  const [editModal, setEditModal] = useState<Boolean>(false)
+  const [currentBookToEdit, setCurrentBookToEdit] = useState<BookInterface>()
+  const [editModal, setEditModal] = useState<boolean>(false)
 
   const fetchBookById = async () => {
     try {
@@ -158,7 +158,9 @@ export default function Book({ params }: { params: { id: string } }) {
           </Button>
           <Button
             onClick={() => {
-              setCurrentBookToEdit(book)
+              if (book) {
+                setCurrentBookToEdit(book)
+              }
               setEditModal(true)
             }}
           >
@@ -215,22 +217,6 @@ export default function Book({ params }: { params: { id: string } }) {
             </TableHeader>
           </TableRow>
         </TableHead>
-        <TableBody>
-          {book?.reviews
-            ?.sort((a, b) =>
-              asc ? a.createdAt.getTime() - b.createdAt.getTime() : b.createdAt.getTime() - a.createdAt.getTime()
-            )
-            .map((review) => (
-              <TableRow key={review?.id} href={`/reviews/${review?.id}`} title={`Review #${review?.id}`}>
-                <TableCell>{review?.id}</TableCell>
-                <TableCell>
-                  <Rating rating={Number(review?.rating.toPrecision(2))} />
-                </TableCell>
-                <TableCell>{review?.comment}</TableCell>
-                <TableCell>{review?.createdAt.toDateString()}</TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
       </Table>
       <DeleteBook
         isOpen={isAlertOpen}

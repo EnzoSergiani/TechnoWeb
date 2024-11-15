@@ -1,3 +1,4 @@
+import { AuthorInterface, BookInterface } from '@/export/interface'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { useBook } from '@/providers/useBookProviders'
 import { ChangeEvent, useEffect, useState } from 'react'
@@ -9,18 +10,18 @@ import { Listbox, ListboxLabel, ListboxOption } from './listbox'
 export const CreateInput = (props: {
   setOpenDialog: (open: boolean) => void
   type: 'author' | 'book'
-  bookInformation?: BookProps | undefined
-  authorInformation?: AuthorProps | undefined
+  bookInformation?: BookInterface | undefined
+  authorInformation?: AuthorInterface | undefined
 }) => {
   // Add props parameter
   const [title, setTitle] = useState('')
-  const [authorId, setAuthorId] = useState<number>(1)
   const [publicationDate, setPublicationDate] = useState('')
   const [price, setPrice] = useState(-1)
   const [preview, setPreview] = useState<string | null>(null)
   const [coverPhoto, setCoverPhoto] = useState<string | null>(null)
   const authorProv = useAuthor()
   const bookProv = useBook()
+  const [authorId, setAuthorId] = useState<number>(authorProv.authorsProv[0].id)
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -66,7 +67,7 @@ export const CreateInput = (props: {
         }
         return
       }
-      const newAuthor: Omit<AuthorProps, 'id'> = {
+      const newAuthor: Omit<AuthorInterface, 'id'> = {
         name: title,
         profilePicture: coverPhoto || 'default.jpg',
         numberOfBooks: 0,
@@ -130,7 +131,12 @@ export const CreateInput = (props: {
                 <>
                   <Field>
                     <Label>Author</Label>
-                    <Listbox name="status" defaultValue={1} value={authorId} onChange={(e) => setAuthorId(e || 1)}>
+                    <Listbox
+                      name="status"
+                      defaultValue={authorId}
+                      value={authorId}
+                      onChange={(e) => setAuthorId(e || 1)}
+                    >
                       {authorProv.authorsProv.map((author) => (
                         <ListboxOption key={author.id} value={author.id}>
                           <ListboxLabel>{author.name}</ListboxLabel>
@@ -164,10 +170,10 @@ export const CreateInput = (props: {
                   required
                 />
               </Field>
-              <Field>
+              {/* <Field>
                 <Label>{props.bookInformation?.coverPhoto ? 'Current Cover Photo:' : 'Cover Photo:'}</Label>
                 <Input type="file" accept="image/*" onChange={handleFileChange} required />
-              </Field>
+              </Field> */}
             </>
           )}
         </Fieldset>
@@ -177,7 +183,7 @@ export const CreateInput = (props: {
             : props.authorInformation?.profilePicture
               ? 'Current profile picture'
               : 'Cover Photo:'}
-          <input type="file" accept="image/*" onChange={handleFileChange} />
+          <input type="file" accept="image/*" onChange={handleFileChange} required />
         </label>
         {preview && <img src={preview} alt="Image preview" style={{ width: 100, height: 100 }} />}
 

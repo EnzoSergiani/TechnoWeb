@@ -24,9 +24,9 @@ export default function Authors() {
   const [currentAuthorId, setCurrentAuthorId] = useState<number | null>(null)
   const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
-  const [filteredAuthors, setFilteredAuthors] = useState<AuthorProps[]>([])
+  const [filteredAuthors, setFilteredAuthors] = useState<AuthorInterface[]>([])
   const [editModal, setEditModal] = useState<boolean>(false)
-  const [currentAuthorToEdit, setCurrentAuthorToEdit] = useState<AuthorProps>()
+  const [currentAuthorToEdit, setCurrentAuthorToEdit] = useState<AuthorInterface>()
 
   const fetchAuthors = async () => {
     try {
