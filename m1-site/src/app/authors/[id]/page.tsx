@@ -120,7 +120,9 @@ export default function Author({ params }: { params: { id: string } }) {
           <div className="flex gap-2">
             <Button
               onClick={() => {
-                setCurrentAuthorToEdit(author)
+                if (author) {
+                  setCurrentAuthorToEdit(author)
+                }
                 setEditModal(true)
               }}
             >
