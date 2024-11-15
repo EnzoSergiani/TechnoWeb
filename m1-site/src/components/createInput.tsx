@@ -1,4 +1,4 @@
-import { Author } from '@/data'
+import { AuthorProps } from '@/data'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { useBook } from '@/providers/useBookProviders'
 import { ChangeEvent, useState } from 'react'
@@ -13,7 +13,7 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
   const [authorId, setAuthorId] = useState<number>(1)
   const [publicationDate, setPublicationDate] = useState('')
   const [price, setPrice] = useState(-1)
-  const [preview, setPreview] = useState(null)
+  const [preview, setPreview] = useState<string | null>(null)
   const [coverPhoto, setCoverPhoto] = useState<string | null>(null)
   const authorProv = useAuthor()
   const bookProv = useBook()
@@ -38,9 +38,9 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
         console.error('Error creating book:', e)
       }
     } else {
-      const newAuthor: Omit<Author, 'id'> = {
+      const newAuthor: Omit<AuthorProps, 'id'> = {
         name: title,
-        profilePicture: 'default.png',
+        profilePicture: coverPhoto || 'default.jpg',
         numberOfBooks: 0,
         books: [],
         rating: 0,
@@ -121,7 +121,7 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
         </Fieldset>
         <label>
           Cover Photo:
-          <input type="file" accept="image/*" onChange={handleFileChange} />
+          <input type="file" accept="image/*" onChange={handleFileChange} required />
         </label>
         {preview && <img src={preview} alt="Image preview" style={{ width: 100, height: 100 }} />}
 
