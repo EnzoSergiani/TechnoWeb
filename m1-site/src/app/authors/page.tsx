@@ -38,6 +38,7 @@ export default function Authors() {
     setOpenCreateAuthor(true)
   }
   useEffect(() => {
+    setFilteredAuthors(authorsProv.authorsProv)
     setAuthors(authorsProv.authorsProv)
   }, [authorsProv.authorsProv])
 
