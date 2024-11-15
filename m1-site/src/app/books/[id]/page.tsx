@@ -3,7 +3,9 @@ import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
 import CommentDrawer from '@/components/commentDrawer'
+import { CreateInput } from '@/components/createInput'
 import { DeleteBook } from '@/components/deleteBook'
+import { Dialog, DialogBody, DialogTitle } from '@/components/dialog'
 import { Heading, Subheading } from '@/components/heading'
 import Rating from '@/components/rating'
 import SetRating from '@/components/setRating'
@@ -26,6 +28,8 @@ export default function Book({ params }: { params: { id: string } }) {
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [rating, setRating] = useState<number>(0)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [currentBookToEdit, setCurrentBookToEdit] = useState<BookProps>()
+  const [editModal, setEditModal] = useState<Boolean>(false)
 
   const fetchBookById = async () => {
     try {
@@ -103,6 +107,12 @@ export default function Book({ params }: { params: { id: string } }) {
 
   return (
     <>
+      <Dialog title="Sort by" className="dialog" open={editModal} onClose={() => setEditModal(false)}>
+        <DialogTitle>Edit a book</DialogTitle>
+        <DialogBody>
+          <CreateInput setOpenDialog={setEditModal} type="book" bookInformation={currentBookToEdit} />
+        </DialogBody>
+      </Dialog>
       <CommentDrawer isOpen={drawerOpen} onClose={handleCloseComment} />
       <div className="max-lg:hidden">
         <Link href="/books" className="inline-flex items-center gap-2 text-sm/6 text-zinc-500 dark:text-zinc-400">
@@ -143,7 +153,14 @@ export default function Book({ params }: { params: { id: string } }) {
           >
             Comment
           </Button>
-          <Button>Edit</Button>
+          <Button
+            onClick={() => {
+              setCurrentBookToEdit(book)
+              setEditModal(true)
+            }}
+          >
+            Edit
+          </Button>
           <Button
             color="red"
             onClick={() => {
