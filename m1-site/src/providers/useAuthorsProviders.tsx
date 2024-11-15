@@ -1,20 +1,21 @@
-import { Author } from '@/data'
+import { AuthorProps } from '@/data'
 import { createContext, useContext, useEffect, useState } from 'react'
 import axiosApi from './axiosApi'
 
 type AuthorContextType = {
-  authorsProv: Author[]
-  load: () => Promise<Author[]>
-  loadById(id: number): Promise<Author | null>
-  createAuthor(authorData: Omit<Author, 'id'>): Promise<Author>
+  authorsProv: AuthorProps[]
+  load: () => Promise<AuthorProps[]>
+  loadById(id: string): Promise<AuthorProps | null>
+  deleteAuthor: (id: string) => Promise<void>
+  createAuthor(authorData: Omit<AuthorProps, 'id'>): Promise<AuthorProps>
 }
 
 export const AuthorContext = createContext<AuthorContextType | undefined>(undefined)
 
 export const AuthorProviders = ({ children }: { children: React.ReactNode }) => {
-  const [authorsProv, setAuthors] = useState<Author[]>([])
+  const [authorsProv, setAuthors] = useState<AuthorProps[]>([])
 
-  const load = async (): Promise<Author[]> => {
+  const load = async (): Promise<AuthorProps[]> => {
     try {
       const response = await fetch('http://localhost:3001/authors')
       const data = await response.json()
@@ -26,7 +27,7 @@ export const AuthorProviders = ({ children }: { children: React.ReactNode }) => 
       return []
     }
   }
-  const loadById = async (id: number): Promise<Author | null> => {
+  const loadById = async (id: string): Promise<AuthorProps | null> => {
     try {
       const response = await fetch(`http://localhost:3001/authors/${id}`)
       const data = await response.json()
@@ -36,7 +37,18 @@ export const AuthorProviders = ({ children }: { children: React.ReactNode }) => 
       return null
     }
   }
-  const createAuthor = async (authorData: Omit<Author, 'id'>): Promise<Author> => {
+
+  const deleteAuthor = async (id: string) => {
+    try {
+      const response = await axiosApi.delete(`/authors/${id}`)
+      console.log('Author deleted:', response.data)
+      load()
+    } catch (error) {
+      console.error('Error deleting author:', error)
+    }
+  }
+
+  const createAuthor = async (authorData: Omit<AuthorProps, 'id'>): Promise<AuthorProps> => {
     try {
       const response = await axiosApi.post('/authors', authorData)
       console.log('Author created:', response.data)
@@ -52,7 +64,9 @@ export const AuthorProviders = ({ children }: { children: React.ReactNode }) => 
   }, [])
 
   return (
-    <AuthorContext.Provider value={{ authorsProv, load, loadById, createAuthor }}>{children}</AuthorContext.Provider>
+    <AuthorContext.Provider value={{ authorsProv, load, loadById, deleteAuthor, createAuthor }}>
+      {children}
+    </AuthorContext.Provider>
   )
 }
 

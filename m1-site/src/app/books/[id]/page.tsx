@@ -2,23 +2,28 @@
 import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
+import { DeleteBook } from '@/components/deleteBook'
 import { Heading, Subheading } from '@/components/heading'
 import Rating from '@/components/rating'
+import SetRating from '@/components/setRating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
-import type { Book } from '@/data'
-import { deleteBookById } from '@/online/book/book'
+import type { BookProps } from '@/data'
 import { useBook } from '@/providers/useBookProviders'
 import { ChevronLeftIcon, CurrencyDollarIcon } from '@heroicons/react/16/solid'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function Book({ params }: { params: { id: string } }) {
-  const bookProv = useBook()
-  //const router = useRouter()
+  const router = useRouter()
 
-  const [book, setBook] = useState<Book | null>()
+  const bookProv = useBook()
+
+  const [book, setBook] = useState<BookProps | null>()
   const [loading, setLoading] = useState(true)
+  const [currentBookId, setCurrentBookId] = useState<number | null>(null)
+  const [isAlertOpen, setIsAlertOpen] = useState(false)
+  const [rating, setRating] = useState<number>(0)
 
   const fetchBookById = async () => {
     try {
@@ -29,6 +34,32 @@ export default function Book({ params }: { params: { id: string } }) {
       setLoading(false)
     }
   }
+
+  const openAlert = () => setIsAlertOpen(true)
+  const closeAlert = () => setIsAlertOpen(false)
+
+  const handleDeleteBook = (bookId: number) => {
+    setCurrentBookId(bookId)
+    openAlert()
+  }
+
+  const handleConfirmDeleteBook = async () => {
+    try {
+      router.push('/books')
+    } catch (error) {
+      console.error('Erreur lors de la suppression du livre :', error)
+    } finally {
+      closeAlert()
+    }
+  }
+
+  const handleRateBook = async (newRating: number) => {
+    if (book) {
+      await bookProv.rateBook(book.id, newRating)
+      setRating(newRating)
+    }
+  }
+
   useEffect(() => {
     fetchBookById()
   }, [])
@@ -56,17 +87,6 @@ export default function Book({ params }: { params: { id: string } }) {
 
   if (loading) {
     return <div>Loading...</div>
-  }
-
-  const handleDeletion = async () => {
-    try {
-      if (book?.id != undefined) {
-        await deleteBookById(book?.id)
-        window.location.href = '/books'
-      }
-    } catch (error) {
-      console.error('Erreur lors de la suppression du livre :', error)
-    }
   }
 
   return (
@@ -104,10 +124,18 @@ export default function Book({ params }: { params: { id: string } }) {
         </div>
         <div className="flex gap-2">
           <Button>Edit</Button>
-          <Button color="red" onClick={() => handleDeletion()}>
+          <Button
+            color="red"
+            onClick={() => {
+              handleDeleteBook(book?.id || 0)
+            }}
+          >
             Delete
           </Button>
         </div>
+      </div>
+      <div className="flex justify-center p-4">
+        <SetRating value={rating} onChange={handleRateBook} />
       </div>
 
       <Subheading className="mt-12">Author</Subheading>
@@ -166,6 +194,12 @@ export default function Book({ params }: { params: { id: string } }) {
             ))}
         </TableBody>
       </Table>
+      <DeleteBook
+        isOpen={isAlertOpen}
+        onClose={closeAlert}
+        onConfirm={handleConfirmDeleteBook}
+        bookId={currentBookId || 0}
+      />
     </>
   )
 }
