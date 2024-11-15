@@ -1,21 +1,22 @@
-import { Book } from '@/data'
+import { BookProps } from '@/data'
 import { createContext, useContext, useState } from 'react'
 import axiosApi from './axiosApi'
 
 type BookContextType = {
-  booksProv: Book[]
-  load: () => Promise<Book[]>
-  loadById(id: string): Promise<Book | null>
+  booksProv: BookProps[]
+  load: () => Promise<BookProps[]>
+  loadById(id: string): Promise<BookProps | null>
   createBook: (book: any) => Promise<void>
-  deleteBook: (id: string) => Promise<void>
+  deleteBook: (id: number) => Promise<void>
+  rateBook: (id: number, rating: number) => Promise<void>
 }
 
 export const BookContext = createContext<BookContextType | undefined>(undefined)
 
 export const BookProviders = ({ children }: { children: React.ReactNode }) => {
-  const [booksProv, setBooks] = useState<Book[]>([])
+  const [booksProv, setBooks] = useState<BookProps[]>([])
 
-  const load = async (): Promise<Book[]> => {
+  const load = async (): Promise<BookProps[]> => {
     try {
       const response = await fetch('http://localhost:3001/books')
       const data = await response.json()
@@ -27,7 +28,7 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
       return []
     }
   }
-  const loadById = async (id: string): Promise<Book | null> => {
+  const loadById = async (id: string): Promise<BookProps | null> => {
     try {
       const response = await fetch(`http://localhost:3001/books/${id}`)
       const data = await response.json()
@@ -47,7 +48,7 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
       console.error('Error creating book:', error)
     }
   }
-  const deleteBook = async (id: string) => {
+  const deleteBook = async (id: number) => {
     try {
       const response = await axiosApi.delete(`/books/${id}`)
       console.log('Book deleted:', response.data)
@@ -56,10 +57,20 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
       console.error('Error deleting book:', error)
     }
   }
+  const rateBook = async (id: number, rating: number) => {
+    try {
+      const response = await axiosApi.post(`/books/${id}/reviews`, { rating })
+      console.log('Book rated:', response.data)
+      load()
+      return response.data
+    } catch (error) {
+      console.error('Error rating book:', error)
+    }
+  }
 
   // Update the BookContext.Provider value
   return (
-    <BookContext.Provider value={{ booksProv, load, loadById, createBook, deleteBook }}>
+    <BookContext.Provider value={{ booksProv, load, loadById, createBook, deleteBook, rateBook }}>
       {children}
     </BookContext.Provider>
   )

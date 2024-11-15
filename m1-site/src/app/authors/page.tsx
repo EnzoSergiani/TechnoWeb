@@ -8,7 +8,7 @@ import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/componen
 import { Heading } from '@/components/heading'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
-import { Author } from '@/data'
+import { AuthorProps } from '@/data'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { DialogTitle } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/16/solid'
@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react'
 
 export default function Authors() {
   const authorsProv = useAuthor()
-  const [authors, setAuthors] = useState<Author[]>([])
+  const [authors, setAuthors] = useState<AuthorProps[]>([])
   const [openCreateAuthor, setOpenCreateAuthor] = useState(false)
   const fetchAuthors = async () => {
     try {
