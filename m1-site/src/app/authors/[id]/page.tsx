@@ -3,9 +3,11 @@
 import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
+import { CreateInput } from '@/components/createInput'
 import { DeleteAuthor } from '@/components/deleteAuthor'
 import { DeleteBook } from '@/components/deleteBook'
 import { DescriptionDetails, DescriptionList, DescriptionTerm } from '@/components/description-list'
+import { Dialog, DialogBody, DialogTitle } from '@/components/dialog'
 import { Divider } from '@/components/divider'
 import { Heading, Subheading } from '@/components/heading'
 import { Link } from '@/components/link'
@@ -30,6 +32,8 @@ export default function Author({ params }: { params: { id: string } }) {
   const [currentAuthorId, setCurrentAuthorId] = useState<number | null>(null)
   const [isBookAlertOpen, setIsBookAlertOpen] = useState(false)
   const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
+  const [editModal, setEditModal] = useState<boolean>(false)
+  const [currentAuthorToEdit, setCurrentAuthorToEdit] = useState<AuthorInterface>()
 
   const fetchBookById = async () => {
     try {
@@ -85,6 +89,12 @@ export default function Author({ params }: { params: { id: string } }) {
   }
   return (
     <>
+      <Dialog title="Sort by" className="dialog" open={editModal} onClose={() => setEditModal(false)}>
+        <DialogTitle>Edit a author</DialogTitle>
+        <DialogBody>
+          <CreateInput setOpenDialog={setEditModal} type="author" authorInformation={currentAuthorToEdit} />
+        </DialogBody>
+      </Dialog>
       <div className="max-lg:hidden">
         <Link href="/authors" className="inline-flex items-center gap-2 text-sm/6 text-zinc-500 dark:text-zinc-400">
           <ChevronLeftIcon className="size-4 fill-zinc-400 dark:fill-zinc-500" />
@@ -108,7 +118,14 @@ export default function Author({ params }: { params: { id: string } }) {
             </span>
           </div>
           <div className="flex gap-2">
-            <Button>Edit</Button>
+            <Button
+              onClick={() => {
+                setCurrentAuthorToEdit(author)
+                setEditModal(true)
+              }}
+            >
+              Edit
+            </Button>
             <Button
               color="red"
               onClick={() => {
