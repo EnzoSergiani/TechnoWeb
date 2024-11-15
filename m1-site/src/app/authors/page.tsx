@@ -70,7 +70,7 @@ export default function Authors() {
                   <span>{author.name}</span>
                 </div>
               </TableCell>
-              <TableCell>{author.rating || 0}</TableCell>
+              <TableCell>{author.numberOfBooks}</TableCell>
               <TableCell>
                 <Rating rating={author.rating || 0} />
               </TableCell>

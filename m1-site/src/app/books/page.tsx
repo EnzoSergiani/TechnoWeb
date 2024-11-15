@@ -64,8 +64,10 @@ export default function Books() {
 
   function handleSort(key: keyof BookProps) {
     const sortedBooks = [...books].sort((a, b) => {
-      if (a[key] < b[key]) return asc ? -1 : 1
-      if (a[key] > b[key]) return asc ? 1 : -1
+      if (a[key] !== undefined && b[key] !== undefined) {
+        if (a[key] < b[key]) return asc ? -1 : 1
+        if (a[key] > b[key]) return asc ? 1 : -1
+      }
       return 0
     })
     setBooks(sortedBooks)

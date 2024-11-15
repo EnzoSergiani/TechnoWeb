@@ -108,7 +108,6 @@ export default function Author({ params }: { params: { id: string } }) {
             </span>
           </div>
           <div className="flex gap-2">
-            DeleteAuthor
             <Button>Edit</Button>
             <Button
               color="red"
@@ -136,7 +135,7 @@ export default function Author({ params }: { params: { id: string } }) {
           <DescriptionTerm>Profile picture</DescriptionTerm>
           <DescriptionDetails className="flex gap-1">
             <Avatar src={author?.profilePicture} className="size-6" />
-            <span>{author?.profilePicture}</span>
+            {/* <span>{author?.profilePicture}</span> */}
           </DescriptionDetails>
         </DescriptionList>
       </div>
