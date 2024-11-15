@@ -25,6 +25,8 @@ export default function Authors() {
   const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [filteredAuthors, setFilteredAuthors] = useState<AuthorProps[]>([])
+  const [editModal, setEditModal] = useState<boolean>(false)
+  const [currentAuthorToEdit, setCurrentAuthorToEdit] = useState<AuthorProps>()
 
   const fetchAuthors = async () => {
     try {
@@ -68,9 +70,16 @@ export default function Authors() {
   return (
     <>
       <Dialog title="Sort by" className="dialog" open={openCreateAuthor} onClose={() => setOpenCreateAuthor(false)}>
-        <DialogTitle>Add a new book</DialogTitle>
+        <DialogTitle>Add a new author</DialogTitle>
         <DialogBody>
           <CreateInput setOpenDialog={setOpenCreateAuthor} type="author" />
+        </DialogBody>
+      </Dialog>
+
+      <Dialog title="Sort by" className="dialog" open={editModal} onClose={() => setEditModal(false)}>
+        <DialogTitle>Edit a book</DialogTitle>
+        <DialogBody>
+          <CreateInput setOpenDialog={setEditModal} type="author" authorInformation={currentAuthorToEdit} />
         </DialogBody>
       </Dialog>
 
@@ -125,7 +134,14 @@ export default function Authors() {
                     <EllipsisVerticalIcon />
                   </DropdownButton>
                   <DropdownMenu anchor="bottom end">
-                    <DropdownItem>Edit</DropdownItem>
+                    <DropdownItem
+                      onClick={() => {
+                        setCurrentAuthorToEdit(author)
+                        setEditModal(true)
+                      }}
+                    >
+                      Edit
+                    </DropdownItem>
                     <DropdownItem
                       onClick={() => {
                         handleDeleteAuthor(author?.id || 0)

@@ -11,6 +11,7 @@ export const CreateInput = (props: {
   setOpenDialog: (open: boolean) => void
   type: 'author' | 'book'
   bookInformation?: BookProps | undefined
+  authorInformation?: AuthorProps | undefined
 }) => {
   // Add props parameter
   const [title, setTitle] = useState('')
@@ -58,6 +59,14 @@ export const CreateInput = (props: {
         console.error('Error creating book:', e)
       }
     } else {
+      if (props.authorInformation) {
+        const updatedAuthor = {
+          id: props.authorInformation.id,
+          name: title ? title : props.authorInformation.name,
+          profilePicture: coverPhoto ? coverPhoto : props.authorInformation.profilePicture,
+        }
+        return
+      }
       const newAuthor: Omit<AuthorProps, 'id'> = {
         name: title,
         profilePicture: coverPhoto || 'default.jpg',
@@ -93,6 +102,13 @@ export const CreateInput = (props: {
       if (props.bookInformation?.publicationYear) setPublicationDate(props.bookInformation.publicationYear.toString())
     }
   }, [props.bookInformation?.title])
+
+  useEffect(() => {
+    if (props.authorInformation?.name) {
+      setTitle(props.authorInformation.name)
+      if (props.authorInformation.profilePicture) setPreview(props.authorInformation.profilePicture as string)
+    }
+  }, [props.authorInformation?.name])
 
   return (
     <form onSubmit={handleFormSubmit}>
@@ -153,7 +169,11 @@ export const CreateInput = (props: {
           )}
         </Fieldset>
         <label>
-          {props.bookInformation?.coverPhoto ? 'Current Cover Photo:' : 'Cover Photo:'}
+          {props.bookInformation?.coverPhoto
+            ? 'Current Cover Photo:'
+            : props.authorInformation?.profilePicture
+              ? 'Current profile picture'
+              : 'Cover Photo:'}
           <input type="file" accept="image/*" onChange={handleFileChange} />
         </label>
         {preview && <img src={preview} alt="Image preview" style={{ width: 100, height: 100 }} />}
