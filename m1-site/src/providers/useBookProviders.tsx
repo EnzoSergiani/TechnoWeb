@@ -78,7 +78,6 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  // Update the BookContext.Provider value
   return (
     <BookContext.Provider value={{ booksProv, load, loadById, createBook, updateBook, deleteBook, rateBook }}>
       {children}

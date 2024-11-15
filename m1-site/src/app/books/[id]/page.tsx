@@ -115,7 +115,8 @@ export default function Book({ params }: { params: { id: string } }) {
           <CreateInput setOpenDialog={setEditModal} type="book" bookInformation={currentBookToEdit} />
         </DialogBody>
       </Dialog>
-      <CommentDrawer isOpen={drawerOpen} onClose={handleCloseComment} />
+      <CommentDrawer isOpen={drawerOpen} onClose={handleCloseComment} id={book?.id} />
+      Stashed changes
       <div className="max-lg:hidden">
         <Link href="/books" className="inline-flex items-center gap-2 text-sm/6 text-zinc-500 dark:text-zinc-400">
           <ChevronLeftIcon className="size-4 fill-zinc-400 dark:fill-zinc-500" />
@@ -178,7 +179,6 @@ export default function Book({ params }: { params: { id: string } }) {
       <div className="flex justify-center p-4">
         <SetRating value={rating} onChange={handleRateBook} />
       </div>
-
       <Subheading className="mt-12">Author</Subheading>
       <Table className="mt-4 [--gutter:theme(spacing.6)] lg:[--gutter:theme(spacing.10)]">
         <TableHead>
@@ -203,7 +203,6 @@ export default function Book({ params }: { params: { id: string } }) {
           </TableRow>
         </TableBody>
       </Table>
-
       <Subheading className="mt-12">Reviews</Subheading>
       <Table className="mt-4 [--gutter:theme(spacing.6)] lg:[--gutter:theme(spacing.10)]">
         <TableHead>

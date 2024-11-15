@@ -1,22 +1,39 @@
 import { Button } from '@/components/button'
+import { useBook } from '@/providers/useBookProviders'
 import { Drawer } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 
 interface CommentDrawerProps {
   isOpen: boolean
   onClose: () => void
+  id: number | undefined
 }
 
-const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose }) => {
+const CommentDrawer: React.FC<CommentDrawerProps> = ({ isOpen, onClose, id }) => {
+  const bookProv = useBook()
+
   const [drawerOpen, setDrawerOpen] = useState(isOpen)
   const [comment, setComment] = useState('')
   const [comments, setComments] = useState<string[]>([])
 
   useEffect(() => {
     setDrawerOpen(isOpen)
+    fetchComments()
   }, [isOpen])
 
+  const fetchComments = async () => {
+    if (!id) return
+    try {
+      const book = await bookProv.loadById(id.toString())
+      const reviews = book?.reviews || []
+      setComments(reviews.map((review) => review.comment || ''))
+    } catch (error) {
+      console.error('Error loading comments:', error)
+    }
+  }
+
   const handleSendComment = () => {
+    if (!id) return
     setComments([...comments, comment])
     setComment('')
   }
