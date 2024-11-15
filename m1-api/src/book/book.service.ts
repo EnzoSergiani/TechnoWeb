@@ -61,12 +61,6 @@ export class BookService {
 
     Object.assign(book, updateBookDto);
 
-    if (previousAuthor.id != updateBookDto.author.id){
-      await this.authorService.updateAuthorAverageRating(previousAuthor.id);
-    }
-
-    await this.authorService.updateAuthorAverageRating(updateBookDto.author.id);
-
     return this.bookRepository.save(book);
   }
 

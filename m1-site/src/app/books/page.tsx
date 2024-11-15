@@ -21,7 +21,9 @@ export default function Books() {
   const [searchTerm, setSearchTerm] = useState('')
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [openCreateBook, setOpenCreateBook] = useState(false)
-  const [filteredBooks, setFilteredBooks] = useState<Book[]>()
+  const [filteredBooks, setFilteredBooks] = useState<BookProps[]>()
+  const [editModal, setEditModal] = useState<Boolean>(false)
+  const [currentBookToEdit, setCurrentBookToEdit] = useState<BookProps>()
 
   const fetchBooks = async () => {
     try {
@@ -92,6 +94,13 @@ export default function Books() {
         </DialogBody>
       </Dialog>
 
+      <Dialog title="Sort by" className="dialog" open={editModal} onClose={() => setEditModal(false)}>
+        <DialogTitle>Edit a book</DialogTitle>
+        <DialogBody>
+          <CreateInput setOpenDialog={setEditModal} type="book" bookInformation={currentBookToEdit} />
+        </DialogBody>
+      </Dialog>
+
       <div className="flex flex-col gap-4">
         <div className="flex items-end justify-between gap-4">
           <Heading>Books</Heading>
@@ -151,8 +160,6 @@ export default function Books() {
         </TableHead>
         <TableBody>
           {filteredBooks?.map((book) => {
-            console.log('books', books)
-            console.log('filtered', filteredBooks)
             const review =
               book.reviews?.reduce((acc, review) => acc + review.rating, 0) / (book.reviews?.length || 1) || 0
             return (
@@ -181,7 +188,14 @@ export default function Books() {
                       <EllipsisVerticalIcon />
                     </DropdownButton>
                     <DropdownMenu anchor="bottom end">
-                      <DropdownItem>Edit</DropdownItem>
+                      <DropdownItem
+                        onClick={() => {
+                          setCurrentBookToEdit(book)
+                          setEditModal(true)
+                        }}
+                      >
+                        Edit
+                      </DropdownItem>
                       <DropdownItem>Delete</DropdownItem>
                     </DropdownMenu>
                   </Dropdown>

@@ -1,13 +1,17 @@
-import { Author } from '@/data'
+import { Author, BookProps } from '@/data'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { useBook } from '@/providers/useBookProviders'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { Button } from './button'
 import { Field, Fieldset, Label } from './fieldset'
 import { Input } from './input'
 import { Listbox, ListboxLabel, ListboxOption } from './listbox'
 
-export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; type: 'author' | 'book' }) => {
+export const CreateInput = (props: {
+  setOpenDialog: (open: boolean) => void
+  type: 'author' | 'book'
+  bookInformation?: BookProps | undefined
+}) => {
   // Add props parameter
   const [title, setTitle] = useState('')
   const [authorId, setAuthorId] = useState<number>(1)
@@ -66,12 +70,19 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
     }
   }
 
+  useEffect(() => {
+    if (props.bookInformation?.title) {
+      setTitle(props.bookInformation.title)
+      if (props.bookInformation?.coverPhoto) setPreview(props.bookInformation.coverPhoto as string)
+    }
+  }, [props.bookInformation?.title])
+
   return (
     <form onSubmit={handleFormSubmit}>
       <div>
         <Fieldset>
           <Field>
-            <Label>Name</Label>
+            <Label>{props.type === 'book' ? 'Title' : 'Name'}</Label>
             <Input
               type="text"
               value={title}
@@ -83,21 +94,26 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
           </Field>
           {props.type === 'book' && (
             <>
-              <Field>
-                <Label>Author</Label>
-                <Listbox name="status" defaultValue={1} value={authorId} onChange={(e) => setAuthorId(e || 1)}>
-                  {authorProv.authorsProv.map((author) => (
-                    <ListboxOption key={author.id} value={author.id}>
-                      <ListboxLabel>{author.name}</ListboxLabel>
-                    </ListboxOption>
-                  ))}
-                </Listbox>
-              </Field>
+              {props.bookInformation === undefined && (
+                <>
+                  <Field>
+                    <Label>Author</Label>
+                    <Listbox name="status" defaultValue={1} value={authorId} onChange={(e) => setAuthorId(e || 1)}>
+                      {authorProv.authorsProv.map((author) => (
+                        <ListboxOption key={author.id} value={author.id}>
+                          <ListboxLabel>{author.name}</ListboxLabel>
+                        </ListboxOption>
+                      ))}
+                    </Listbox>
+                  </Field>
+                </>
+              )}
+
               <Field>
                 <Label>Price</Label>
                 <Input
                   type="number"
-                  value={price !== -1 ? price : ''}
+                  value={price !== -1 ? price : props.bookInformation ? props.bookInformation.price : ''}
                   onChange={(e) => setPrice(parseInt(e.target.value))}
                   placeholder="Enter book price"
                   id="price"
@@ -109,7 +125,13 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
                 <Label>Publication Year</Label>
                 <Input
                   type="number"
-                  value={publicationDate}
+                  value={
+                    publicationDate !== null
+                      ? publicationDate
+                      : props.bookInformation
+                        ? props.bookInformation.publicationYear
+                        : 0
+                  }
                   onChange={(e) => setPublicationDate(e.target.value)}
                   placeholder="Enter publication year"
                   id="publicationYear"
@@ -120,7 +142,7 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
           )}
         </Fieldset>
         <label>
-          Cover Photo:
+          {props.bookInformation?.coverPhoto ? 'Current Cover Photo:' : 'Cover Photo:'}
           <input type="file" accept="image/*" onChange={handleFileChange} />
         </label>
         {preview && <img src={preview} alt="Image preview" style={{ width: 100, height: 100 }} />}
@@ -129,7 +151,7 @@ export const CreateInput = (props: { setOpenDialog: (open: boolean) => void; typ
           Cancel
         </Button>
         <Button type="submit" style={{ marginTop: '20px' }}>
-          Create
+          {props.bookInformation ? 'Update' : 'Create'}
         </Button>
       </div>
     </form>
