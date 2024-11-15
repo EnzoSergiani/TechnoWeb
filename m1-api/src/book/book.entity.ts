@@ -24,6 +24,9 @@ export class Book {
     @Column({nullable: true})
     coverPhoto: string;
 
+    @Column({nullable: true})
+    description: string;
+
     // Un livre n'a qu'un auteur
     @ManyToOne(() => Author, (author) => author.books, { eager: true })
     author: Author;

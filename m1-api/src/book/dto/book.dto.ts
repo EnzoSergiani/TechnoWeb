@@ -13,6 +13,10 @@ export class CreateBookDto {
   @IsString()
   coverPhoto: string;
 
+  @IsOptional()
+  @IsString()
+  description?: string;
+
   @IsObject()
   author: {
     id: number;
