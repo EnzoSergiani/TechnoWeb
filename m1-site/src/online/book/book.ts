@@ -32,6 +32,16 @@ export const createBook = async (bookData: BookInterface) => {
     }
 };
 
+export const updateBook = async (bookData: BookInterface) => {
+  try {
+    const response = await axiosApi.patch("/books", bookData);
+    //console.log("Book created:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating book:", error);
+  }
+};
+
 export const deleteBookById = async (id: number) => {
     try {
       const response = await axiosApi.delete(`/books/${id}`);

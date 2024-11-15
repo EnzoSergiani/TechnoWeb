@@ -57,15 +57,7 @@ export class BookService {
       throw new NotFoundException(`Book with ID ${id} not found`);
     }
 
-    const previousAuthor : Author = book.author;
-
     Object.assign(book, updateBookDto);
-
-    if (previousAuthor.id != updateBookDto.author.id){
-      await this.authorService.updateAuthorAverageRating(previousAuthor.id);
-    }
-
-    await this.authorService.updateAuthorAverageRating(updateBookDto.author.id);
 
     return this.bookRepository.save(book);
   }

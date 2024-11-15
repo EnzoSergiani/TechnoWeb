@@ -23,7 +23,7 @@ export default function Authors() {
   const [openCreateAuthor, setOpenCreateAuthor] = useState(false)
   const [currentAuthorId, setCurrentAuthorId] = useState<number | null>(null)
   const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState()
+  const [searchTerm, setSearchTerm] = useState<string>('')
   const [filteredAuthors, setFilteredAuthors] = useState<AuthorProps[]>([])
 
   const fetchAuthors = async () => {
@@ -57,7 +57,7 @@ export default function Authors() {
     closeAuthorAlert()
   }
   const handleSearch = () => {
-    setFilteredAuthors(authors.filter((author) => author.name.toLowerCase().includes(searchTerm.toLowerCase())))
+    setFilteredAuthors(authors.filter((author) => author.name.toLowerCase().includes((searchTerm || '').toLowerCase())))
   }
 
   useEffect(() => {

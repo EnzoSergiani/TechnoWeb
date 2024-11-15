@@ -18,8 +18,6 @@ export class UpdateBookDto {
   coverPhoto?: string;
 
   @IsOptional()
-  @IsObject()
-  author: {
-    id: number;
-  };
+  @IsString()
+  description?: string;
 }
