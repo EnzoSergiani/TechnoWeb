@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, Put } from '@nestjs/common';
 import { BookService } from './book.service';
 import { Book } from './book.entity';
 import { CreateBookDto } from './dto/book.dto';
@@ -28,8 +28,9 @@ export class BookController {
   }
 
   // Route pour update un livre
-  @Patch(':id')
+  @Put(':id')
   async updateBook(@Param('id') id: number, @Body() updateBookDto: UpdateBookDto) {
+    console.log("ça part")
     return this.bookService.updateBook(id, updateBookDto);
   }
 

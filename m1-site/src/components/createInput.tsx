@@ -26,6 +26,22 @@ export const CreateInput = (props: {
     e.preventDefault()
 
     if (props.type === 'book') {
+      if (props.bookInformation) {
+        const updatedBook = {
+          id: props.bookInformation.id,
+          title: title ? title : props.bookInformation.title,
+          price: price >= 0 ? price : props.bookInformation.price,
+          publicationYear: publicationDate ? parseInt(publicationDate) : props.bookInformation.publicationYear,
+          coverPhoto: coverPhoto ? coverPhoto : props.bookInformation.coverPhoto,
+        }
+        try {
+          bookProv.updateBook(updatedBook)
+          props.setOpenDialog(false)
+          return
+        } catch (e) {
+          console.error('Error updating book: ', e)
+        }
+      }
       const newBook = {
         title: title,
         author: {
@@ -74,6 +90,7 @@ export const CreateInput = (props: {
     if (props.bookInformation?.title) {
       setTitle(props.bookInformation.title)
       if (props.bookInformation?.coverPhoto) setPreview(props.bookInformation.coverPhoto as string)
+      if (props.bookInformation?.publicationYear) setPublicationDate(props.bookInformation.publicationYear)
     }
   }, [props.bookInformation?.title])
 
@@ -125,13 +142,7 @@ export const CreateInput = (props: {
                 <Label>Publication Year</Label>
                 <Input
                   type="number"
-                  value={
-                    publicationDate !== null
-                      ? publicationDate
-                      : props.bookInformation
-                        ? props.bookInformation.publicationYear
-                        : 0
-                  }
+                  value={publicationDate}
                   onChange={(e) => setPublicationDate(e.target.value)}
                   placeholder="Enter publication year"
                   id="publicationYear"
