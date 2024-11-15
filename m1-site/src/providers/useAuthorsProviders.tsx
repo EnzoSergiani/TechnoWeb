@@ -1,21 +1,21 @@
-import { AuthorProps } from '@/data'
+import { AuthorInterface } from '@/export/interface'
 import { createContext, useContext, useEffect, useState } from 'react'
 import axiosApi from './axiosApi'
 
 type AuthorContextType = {
-  authorsProv: AuthorProps[]
-  load: () => Promise<AuthorProps[]>
-  loadById(id: string): Promise<AuthorProps | null>
+  authorsProv: AuthorInterface[]
+  load: () => Promise<AuthorInterface[]>
+  loadById(id: string): Promise<AuthorInterface | null>
   deleteAuthor: (id: string) => Promise<void>
-  createAuthor(authorData: Omit<AuthorProps, 'id'>): Promise<AuthorProps>
+  createAuthor(authorData: Omit<AuthorInterface, 'id'>): Promise<AuthorInterface>
 }
 
 export const AuthorContext = createContext<AuthorContextType | undefined>(undefined)
 
 export const AuthorProviders = ({ children }: { children: React.ReactNode }) => {
-  const [authorsProv, setAuthors] = useState<AuthorProps[]>([])
+  const [authorsProv, setAuthors] = useState<AuthorInterface[]>([])
 
-  const load = async (): Promise<AuthorProps[]> => {
+  const load = async (): Promise<AuthorInterface[]> => {
     try {
       const response = await fetch('http://localhost:3001/authors')
       const data = await response.json()
@@ -27,7 +27,7 @@ export const AuthorProviders = ({ children }: { children: React.ReactNode }) => 
       return []
     }
   }
-  const loadById = async (id: string): Promise<AuthorProps | null> => {
+  const loadById = async (id: string): Promise<AuthorInterface | null> => {
     try {
       const response = await fetch(`http://localhost:3001/authors/${id}`)
       const data = await response.json()
@@ -48,7 +48,7 @@ export const AuthorProviders = ({ children }: { children: React.ReactNode }) => 
     }
   }
 
-  const createAuthor = async (authorData: Omit<AuthorProps, 'id'>): Promise<AuthorProps> => {
+  const createAuthor = async (authorData: Omit<AuthorInterface, 'id'>): Promise<AuthorInterface> => {
     try {
       const response = await axiosApi.post('/authors', authorData)
       console.log('Author created:', response.data)

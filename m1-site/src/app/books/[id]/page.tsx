@@ -8,7 +8,7 @@ import { Heading, Subheading } from '@/components/heading'
 import Rating from '@/components/rating'
 import SetRating from '@/components/setRating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
-import type { BookProps } from '@/data'
+import type { BookInterface } from '@/export/interface'
 import { useBook } from '@/providers/useBookProviders'
 import { ChevronLeftIcon, CurrencyDollarIcon } from '@heroicons/react/16/solid'
 import Link from 'next/link'
@@ -20,7 +20,7 @@ export default function Book({ params }: { params: { id: string } }) {
 
   const bookProv = useBook()
 
-  const [book, setBook] = useState<BookProps | null>()
+  const [book, setBook] = useState<BookInterface | null>()
   const [loading, setLoading] = useState(true)
   const [currentBookId, setCurrentBookId] = useState<number | null>(null)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
@@ -57,9 +57,11 @@ export default function Book({ params }: { params: { id: string } }) {
 
   const handleRateBook = async (newRating: number) => {
     if (book) {
-      await bookProv.rateBook(book.id, newRating)
+      if (book?.id !== undefined) {
+        await bookProv.rateBook(book.id, newRating)
+      }
       setRating(newRating)
-      const updatedBook = await bookProv.loadById(book.id.toString())
+      const updatedBook = await bookProv.loadById(book?.id?.toString() || '')
       setBook(updatedBook)
     }
   }
@@ -178,7 +180,7 @@ export default function Book({ params }: { params: { id: string } }) {
               </div>
             </TableCell>
             <TableCell>{author?.numberOfBooks}</TableCell>
-            <TableCell>{author?.rating.toPrecision(2)}</TableCell>
+            <TableCell>{author?.rating ? author.rating.toPrecision(2) : 'N/A'}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
