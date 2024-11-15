@@ -1,4 +1,3 @@
-import { AuthorProps, BookProps } from '@/data'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { useBook } from '@/providers/useBookProviders'
 import { ChangeEvent, useEffect, useState } from 'react'
@@ -164,6 +163,10 @@ export const CreateInput = (props: {
                   id="publicationYear"
                   required
                 />
+              </Field>
+              <Field>
+                <Label>{props.bookInformation?.coverPhoto ? 'Current Cover Photo:' : 'Cover Photo:'}</Label>
+                <Input type="file" accept="image/*" onChange={handleFileChange} required />
               </Field>
             </>
           )}

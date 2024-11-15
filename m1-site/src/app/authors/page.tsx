@@ -10,7 +10,7 @@ import { Heading } from '@/components/heading'
 import { Input, InputGroup } from '@/components/input'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
-import { AuthorProps } from '@/data'
+import { AuthorInterface } from '@/export/interface'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { DialogTitle } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/16/solid'
@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react'
 
 export default function Authors() {
   const authorsProv = useAuthor()
-  const [authors, setAuthors] = useState<AuthorProps[]>([])
+  const [authors, setAuthors] = useState<AuthorInterface[]>([])
   const [openCreateAuthor, setOpenCreateAuthor] = useState(false)
   const [currentAuthorId, setCurrentAuthorId] = useState<number | null>(null)
   const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
@@ -60,7 +60,9 @@ export default function Authors() {
     closeAuthorAlert()
   }
   const handleSearch = () => {
-    setFilteredAuthors(authors.filter((author) => author.name.toLowerCase().includes((searchTerm || '').toLowerCase())))
+    setFilteredAuthors(
+      authors.filter((author) => author.name?.toLowerCase().includes((searchTerm || '').toLowerCase()))
+    )
   }
 
   useEffect(() => {
