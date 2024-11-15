@@ -28,7 +28,6 @@ export default function Books() {
   const [currentBookId, setCurrentBookId] = useState<number | null>(null)
   const [isBookAlertOpen, setIsBookAlertOpen] = useState(false)
   const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
-  // const [filteredBooks, setFilteredBooks] = useState<BookProps[]>()
 
   const fetchBooks = async () => {
     try {
@@ -100,9 +99,6 @@ export default function Books() {
   const handleConfirmDeleteBook = () => {
     closeBookAlert()
   }
-  useEffect(() => {
-    console.log('filtered 1111', filteredBooks)
-  }, [filteredBooks])
 
   return (
     <>
