@@ -4,6 +4,7 @@ import { Avatar } from '@/components/avatar'
 import { Badge } from '@/components/badge'
 import { Button } from '@/components/button'
 import { CreateInput } from '@/components/createInput'
+import { DeleteBook } from '@/components/deleteBook'
 import { Dialog, DialogBody, DialogTitle } from '@/components/dialog'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/components/dropdown'
 import { Heading } from '@/components/heading'
@@ -21,6 +22,9 @@ export default function Books() {
   const [searchTerm, setSearchTerm] = useState('')
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [openCreateBook, setOpenCreateBook] = useState(false)
+  const [currentBookId, setCurrentBookId] = useState<number | null>(null)
+  const [isBookAlertOpen, setIsBookAlertOpen] = useState(false)
+  const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
 
   const fetchBooks = async () => {
     try {
@@ -76,6 +80,19 @@ export default function Books() {
   function handleCreateBook() {
     setOpenCreateBook(true)
   }
+
+  const openBookAlert = () => setIsBookAlertOpen(true)
+  const closeBookAlert = () => setIsBookAlertOpen(false)
+
+  const handleDeleteBook = (bookId: number) => {
+    setCurrentBookId(bookId)
+    openBookAlert()
+  }
+
+  const handleConfirmDeleteBook = () => {
+    closeBookAlert()
+  }
+
   return (
     <>
       <Dialog title="Sort by" className="dialog" open={openCreateBook} onClose={() => setOpenCreateBook(false)}>
@@ -171,10 +188,22 @@ export default function Books() {
                     </DropdownButton>
                     <DropdownMenu anchor="bottom end">
                       <DropdownItem>Edit</DropdownItem>
-                      <DropdownItem>Delete</DropdownItem>
+                      <DropdownItem
+                        onClick={() => {
+                          handleDeleteBook(book.id)
+                        }}
+                      >
+                        Delete
+                      </DropdownItem>
                     </DropdownMenu>
                   </Dropdown>
                 </TableCell>
+                <DeleteBook
+                  isOpen={isBookAlertOpen}
+                  onClose={closeBookAlert}
+                  onConfirm={handleConfirmDeleteBook}
+                  bookId={currentBookId || 0}
+                />
               </TableRow>
             )
           })}
