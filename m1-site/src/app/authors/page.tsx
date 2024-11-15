@@ -79,7 +79,7 @@ export default function Authors() {
       </Dialog>
 
       <Dialog title="Sort by" className="dialog" open={editModal} onClose={() => setEditModal(false)}>
-        <DialogTitle>Edit a book</DialogTitle>
+        <DialogTitle>Edit a author</DialogTitle>
         <DialogBody>
           <CreateInput setOpenDialog={setEditModal} type="author" authorInformation={currentAuthorToEdit} />
         </DialogBody>
