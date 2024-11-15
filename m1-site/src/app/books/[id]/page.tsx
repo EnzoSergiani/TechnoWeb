@@ -59,7 +59,7 @@ export default function Book({ params }: { params: { id: string } }) {
     if (book) {
       await bookProv.rateBook(book.id, newRating)
       setRating(newRating)
-      const updatedBook = await bookProv.loadById(book.id)
+      const updatedBook = await bookProv.loadById(book.id.toString())
       setBook(updatedBook)
     }
   }
@@ -122,7 +122,7 @@ export default function Book({ params }: { params: { id: string } }) {
           <div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <Heading>{book?.title}</Heading>
-              <Rating rating={book?.rating} />
+              <Rating rating={book?.rating ?? 0} />
               <Badge color={'yellow'} className="flex items-center justify-center">
                 <CurrencyDollarIcon className="size-4" />
                 <span>{book?.price}</span>
@@ -206,7 +206,7 @@ export default function Book({ params }: { params: { id: string } }) {
               <TableRow key={review?.id} href={`/reviews/${review?.id}`} title={`Review #${review?.id}`}>
                 <TableCell>{review?.id}</TableCell>
                 <TableCell>
-                  <Rating rating={review?.rating.toPrecision(2)} />
+                  <Rating rating={Number(review?.rating.toPrecision(2))} />
                 </TableCell>
                 <TableCell>{review?.comment}</TableCell>
                 <TableCell>{review?.createdAt.toDateString()}</TableCell>
