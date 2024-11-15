@@ -103,13 +103,6 @@ export default function Book({ params }: { params: { id: string } }) {
 
   return (
     <>
-      <Button
-        onClick={() => {
-          toggleDrawer(true)
-        }}
-      >
-        Comment
-      </Button>
       <CommentDrawer isOpen={drawerOpen} onClose={handleCloseComment} />
       <div className="max-lg:hidden">
         <Link href="/books" className="inline-flex items-center gap-2 text-sm/6 text-zinc-500 dark:text-zinc-400">
@@ -143,6 +136,13 @@ export default function Book({ params }: { params: { id: string } }) {
           )}
         </div>
         <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              toggleDrawer(true)
+            }}
+          >
+            Comment
+          </Button>
           <Button>Edit</Button>
           <Button
             color="red"
