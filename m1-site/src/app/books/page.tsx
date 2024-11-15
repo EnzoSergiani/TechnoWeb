@@ -23,7 +23,7 @@ export default function Books() {
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [openCreateBook, setOpenCreateBook] = useState(false)
   const [filteredBooks, setFilteredBooks] = useState<BookProps[]>()
-  const [editModal, setEditModal] = useState<Boolean>(false)
+  const [editModal, setEditModal] = useState<boolean>(false)
   const [currentBookToEdit, setCurrentBookToEdit] = useState<BookProps>()
   const [currentBookId, setCurrentBookId] = useState<number | null>(null)
   const [isBookAlertOpen, setIsBookAlertOpen] = useState(false)

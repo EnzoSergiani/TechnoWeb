@@ -90,7 +90,7 @@ export const CreateInput = (props: {
     if (props.bookInformation?.title) {
       setTitle(props.bookInformation.title)
       if (props.bookInformation?.coverPhoto) setPreview(props.bookInformation.coverPhoto as string)
-      if (props.bookInformation?.publicationYear) setPublicationDate(props.bookInformation.publicationYear)
+      if (props.bookInformation?.publicationYear) setPublicationDate(props.bookInformation.publicationYear.toString())
     }
   }, [props.bookInformation?.title])
 
