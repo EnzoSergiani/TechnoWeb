@@ -48,6 +48,7 @@ export default function Books() {
   }, [])
 
   useEffect(() => {
+    setFilteredBooks(bookProv.booksProv)
     setBooks(bookProv.booksProv)
   }, [bookProv.booksProv])
 
@@ -74,14 +75,14 @@ export default function Books() {
   const [asc, setAsc] = useState(true)
 
   function handleSort(key: keyof BookProps) {
-    const sortedBooks = [...books].sort((a, b) => {
+    const sortedBooks = [...filteredBooks].sort((a, b) => {
       if (a[key] !== undefined && b[key] !== undefined) {
         if (a[key] < b[key]) return asc ? -1 : 1
         if (a[key] > b[key]) return asc ? 1 : -1
       }
       return 0
     })
-    setBooks(sortedBooks)
+    setFilteredBooks(sortedBooks)
     setAsc(!asc)
   }
   function handleCreateBook() {

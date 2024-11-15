@@ -52,7 +52,7 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
   const updateBook = async (bookData: any) => {
     try {
       const response = await axiosApi.put(`/books/${bookData.id}`, bookData)
-      console.log('Book updated:', response.data)
+      //console.log('Book updated:', response.data)
       return response.data
     } catch (error) {
       console.error('Error creating book:', error)
@@ -61,7 +61,7 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
   const deleteBook = async (id: number) => {
     try {
       const response = await axiosApi.delete(`/books/${id}`)
-      console.log('Book deleted:', response.data)
+      //console.log('Book deleted:', response.data)
       load()
     } catch (error) {
       console.error('Error deleting book:', error)
@@ -70,7 +70,7 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
   const rateBook = async (id: number, rating: number) => {
     try {
       const response = await axiosApi.post(`/books/${id}/reviews`, { rating })
-      console.log('Book rated:', response.data)
+      //console.log('Book rated:', response.data)
       load()
       return response.data
     } catch (error) {
