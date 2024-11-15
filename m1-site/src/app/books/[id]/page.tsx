@@ -216,22 +216,6 @@ export default function Book({ params }: { params: { id: string } }) {
             </TableHeader>
           </TableRow>
         </TableHead>
-        <TableBody>
-          {book?.reviews
-            ?.sort((a, b) =>
-              asc ? a.createdAt.getTime() - b.createdAt.getTime() : b.createdAt.getTime() - a.createdAt.getTime()
-            )
-            .map((review) => (
-              <TableRow key={review?.id} href={`/reviews/${review?.id}`} title={`Review #${review?.id}`}>
-                <TableCell>{review?.id}</TableCell>
-                <TableCell>
-                  <Rating rating={Number(review?.rating.toPrecision(2))} />
-                </TableCell>
-                <TableCell>{review?.comment}</TableCell>
-                <TableCell>{review?.createdAt.toDateString()}</TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
       </Table>
       <DeleteBook
         isOpen={isAlertOpen}
