@@ -11,20 +11,20 @@ import { Heading } from '@/components/heading'
 import { Input, InputGroup } from '@/components/input'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
-import { BookProps } from '@/data'
+import { BookInterface } from '@/export/interface'
 import { useBook } from '@/providers/useBookProviders'
 
 import { CurrencyDollarIcon, EllipsisVerticalIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { useEffect, useRef, useState } from 'react'
 export default function Books() {
   const bookProv = useBook()
-  const [books, setBooks] = useState<BookProps[]>(bookProv.booksProv)
+  const [books, setBooks] = useState<BookInterface[]>(bookProv.booksProv)
   const [searchTerm, setSearchTerm] = useState('')
   const timeoutId = useRef<NodeJS.Timeout | null>(null)
   const [openCreateBook, setOpenCreateBook] = useState(false)
-  const [filteredBooks, setFilteredBooks] = useState<BookProps[]>()
+  const [filteredBooks, setFilteredBooks] = useState<BookInterface[]>()
   const [editModal, setEditModal] = useState<boolean>(false)
-  const [currentBookToEdit, setCurrentBookToEdit] = useState<BookProps>()
+  const [currentBookToEdit, setCurrentBookToEdit] = useState<BookInterface>()
   const [currentBookId, setCurrentBookId] = useState<number | null>(null)
   const [isBookAlertOpen, setIsBookAlertOpen] = useState(false)
   const [isAuthorAlertOpen, setIsAuthorAlertOpen] = useState(false)
@@ -74,8 +74,8 @@ export default function Books() {
 
   const [asc, setAsc] = useState(true)
 
-  function handleSort(key: keyof BookProps) {
-    const sortedBooks = [...filteredBooks].sort((a, b) => {
+  function handleSort(key: keyof BookInterface) {
+    const sortedBooks = [...(filteredBooks || [])].sort((a, b) => {
       if (a[key] !== undefined && b[key] !== undefined) {
         if (a[key] < b[key]) return asc ? -1 : 1
         if (a[key] > b[key]) return asc ? 1 : -1
@@ -180,7 +180,7 @@ export default function Books() {
         <TableBody>
           {filteredBooks?.map((book) => {
             const review =
-              book.reviews?.reduce((acc, review) => acc + review.rating, 0) / (book.reviews?.length || 1) || 0
+              (book.reviews?.reduce((acc, review) => acc + review.rating, 0) ?? 0) / (book.reviews?.length || 1) || 0
             return (
               <TableRow key={book.id} href={`books/${book.id}`} title={`Order #${book.id}`}>
                 <TableCell>{book.id}</TableCell>
@@ -193,7 +193,7 @@ export default function Books() {
                 </TableCell>
                 <TableCell>{book.publicationYear}</TableCell>
                 <TableCell>
-                  <Rating rating={book.rating} />
+                  <Rating rating={book.rating ?? 0} />
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
@@ -217,7 +217,7 @@ export default function Books() {
                       </DropdownItem>
                       <DropdownItem
                         onClick={() => {
-                          handleDeleteBook(book.id)
+                          handleDeleteBook(book.id!)
                         }}
                       >
                         Delete

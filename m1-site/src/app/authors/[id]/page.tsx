@@ -11,7 +11,7 @@ import { Heading, Subheading } from '@/components/heading'
 import { Link } from '@/components/link'
 import Rating from '@/components/rating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
-import { AuthorProps } from '@/data'
+import { AuthorInterface } from '@/export/interface'
 import { useAuthor } from '@/providers/useAuthorsProviders'
 import { useBook } from '@/providers/useBookProviders'
 import { CalendarIcon, ChevronLeftIcon } from '@heroicons/react/16/solid'
@@ -24,7 +24,7 @@ export default function Author({ params }: { params: { id: string } }) {
   const authorProv = useAuthor()
   const bookProv = useBook()
 
-  const [author, setAuthor] = useState<AuthorProps | null>()
+  const [author, setAuthor] = useState<AuthorInterface | null>()
   const [loading, setLoading] = useState(true)
   const [currentBookId, setCurrentBookId] = useState<number | null>(null)
   const [currentAuthorId, setCurrentAuthorId] = useState<number | null>(null)
@@ -103,7 +103,7 @@ export default function Author({ params }: { params: { id: string } }) {
               <CalendarIcon className="size-4 shrink-0 fill-zinc-400 dark:fill-zinc-500" />
               <span>
                 Last publication:{' '}
-                {author?.books[author?.books.length - 1]?.publicationYear || "Can't find last year of publication"}
+                {author?.books?.[author?.books?.length - 1]?.publicationYear || "Can't find last year of publication"}
               </span>
             </span>
           </div>
@@ -151,7 +151,7 @@ export default function Author({ params }: { params: { id: string } }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {author?.books.map((book) => (
+          {author?.books?.map((book) => (
             <TableRow key={book.id} href={`/books/${book.id}`} title={`Book #${book.id}`}>
               <TableCell>{book.id}</TableCell>
               <TableCell className="text-zinc-500">{book.publicationYear}</TableCell>
@@ -160,7 +160,7 @@ export default function Author({ params }: { params: { id: string } }) {
               <TableCell>
                 <Button
                   onClick={() => {
-                    handleDeleteBook(book.id)
+                    handleDeleteBook(book.id!)
                   }}
                   color="red"
                   className="border border-red-600 text-red-600 transition duration-300 hover:bg-red-600 hover:text-white"
