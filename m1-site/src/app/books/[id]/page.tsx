@@ -5,6 +5,7 @@ import { Button } from '@/components/button'
 import { DeleteBook } from '@/components/deleteBook'
 import { Heading, Subheading } from '@/components/heading'
 import Rating from '@/components/rating'
+import SetRating from '@/components/setRating'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
 import type { BookProps } from '@/data'
 import { useBook } from '@/providers/useBookProviders'
@@ -22,6 +23,7 @@ export default function Book({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true)
   const [currentBookId, setCurrentBookId] = useState<number | null>(null)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
+  const [rating, setRating] = useState<number>(0)
 
   const fetchBookById = async () => {
     try {
@@ -48,6 +50,13 @@ export default function Book({ params }: { params: { id: string } }) {
       console.error('Erreur lors de la suppression du livre :', error)
     } finally {
       closeAlert()
+    }
+  }
+
+  const handleRateBook = async (newRating: number) => {
+    if (book) {
+      await bookProv.rateBook(book.id, newRating)
+      setRating(newRating)
     }
   }
 
@@ -124,6 +133,9 @@ export default function Book({ params }: { params: { id: string } }) {
             Delete
           </Button>
         </div>
+      </div>
+      <div className="flex justify-center p-4">
+        <SetRating value={rating} onChange={handleRateBook} />
       </div>
 
       <Subheading className="mt-12">Author</Subheading>
