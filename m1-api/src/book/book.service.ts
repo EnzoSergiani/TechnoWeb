@@ -57,8 +57,6 @@ export class BookService {
       throw new NotFoundException(`Book with ID ${id} not found`);
     }
 
-    const previousAuthor : Author = book.author;
-
     Object.assign(book, updateBookDto);
 
     return this.bookRepository.save(book);

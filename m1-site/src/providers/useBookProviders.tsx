@@ -7,6 +7,7 @@ type BookContextType = {
   load: () => Promise<BookProps[]>
   loadById(id: string): Promise<BookProps | null>
   createBook: (book: any) => Promise<void>
+  updateBook: (book: any) => Promise<void>
   deleteBook: (id: number) => Promise<void>
   rateBook: (id: number, rating: number) => Promise<void>
 }
@@ -48,6 +49,15 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
       console.error('Error creating book:', error)
     }
   }
+  const updateBook = async (bookData: any) => {
+    try {
+      const response = await axiosApi.put(`/books/${bookData.id}`, bookData)
+      console.log('Book updated:', response.data)
+      return response.data
+    } catch (error) {
+      console.error('Error creating book:', error)
+    }
+  }
   const deleteBook = async (id: number) => {
     try {
       const response = await axiosApi.delete(`/books/${id}`)
@@ -70,7 +80,7 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
 
   // Update the BookContext.Provider value
   return (
-    <BookContext.Provider value={{ booksProv, load, loadById, createBook, deleteBook, rateBook }}>
+    <BookContext.Provider value={{ booksProv, load, loadById, createBook, updateBook, deleteBook, rateBook }}>
       {children}
     </BookContext.Provider>
   )
