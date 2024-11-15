@@ -10,7 +10,6 @@ type BookContextType = {
   updateBook: (book: any) => Promise<void>
   deleteBook: (id: number) => Promise<void>
   rateBook: (id: number, rating: number) => Promise<void>
-  commentBook: (id: number, comment: string) => Promise<void>
 }
 
 export const BookContext = createContext<BookContextType | undefined>(undefined)
@@ -78,21 +77,9 @@ export const BookProviders = ({ children }: { children: React.ReactNode }) => {
       console.error('Error rating book:', error)
     }
   }
-  const commentBook = async (id: number, comment: string) => {
-    try {
-      const response = await axiosApi.post(`/books/${id}/comments`, { comment })
-      load()
-      return response.data
-    } catch (error) {
-      console.error('Error commenting book:', error)
-    }
-  }
 
-  // Update the BookContext.Provider value
   return (
-    <BookContext.Provider
-      value={{ booksProv, load, loadById, createBook, updateBook, deleteBook, rateBook, commentBook }}
-    >
+    <BookContext.Provider value={{ booksProv, load, loadById, createBook, updateBook, deleteBook, rateBook }}>
       {children}
     </BookContext.Provider>
   )
